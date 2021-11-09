@@ -72,7 +72,7 @@ std::vector<NativeFunction> GetStringFunctionRegistry() {
                      "gdv_fn_castINT_utf8",
                      NativeFunction::kNeedsContext | NativeFunction::kCanReturnErrors),
       
-      // return null if there is an exception
+      // return null if fail to cast
       NativeFunction("castINTOrNull", {}, DataTypeVector{utf8()}, int32(), kResultNullInternal,
                      "gdv_fn_castINT_or_null_utf8",
                      NativeFunction::kNeedsContext | NativeFunction::kCanReturnErrors),
@@ -81,7 +81,7 @@ std::vector<NativeFunction> GetStringFunctionRegistry() {
                      "gdv_fn_castBIGINT_utf8",
                      NativeFunction::kNeedsContext | NativeFunction::kCanReturnErrors),
       
-      // return null if there is an exception
+      // return null if fail to cast
       NativeFunction("castBIGINTOrNull", {}, DataTypeVector{utf8()}, int64(), kResultNullInternal,
                      "gdv_fn_castBIGINT_or_null_utf8",
                      NativeFunction::kNeedsContext | NativeFunction::kCanReturnErrors),
@@ -90,7 +90,7 @@ std::vector<NativeFunction> GetStringFunctionRegistry() {
                      kResultNullIfNull, "gdv_fn_castFLOAT4_utf8",
                      NativeFunction::kNeedsContext | NativeFunction::kCanReturnErrors),
 
-      // return null if there is an exception
+      // return null if fail to cast
       NativeFunction("castFLOAT4OrNull", {}, DataTypeVector{utf8()}, float32(),
                      kResultNullInternal, "gdv_fn_castFLOAT4_or_null_utf8",
                      NativeFunction::kNeedsContext | NativeFunction::kCanReturnErrors),
@@ -99,7 +99,7 @@ std::vector<NativeFunction> GetStringFunctionRegistry() {
                      kResultNullIfNull, "gdv_fn_castFLOAT8_utf8",
                      NativeFunction::kNeedsContext | NativeFunction::kCanReturnErrors),
       
-      // return null if there is an exception
+      // return null if fail to cast
       NativeFunction("castFLOAT8OrNull", {}, DataTypeVector{utf8()}, float64(),
                      kResultNullInternal, "gdv_fn_castFLOAT8_or_null_utf8",
                      NativeFunction::kNeedsContext | NativeFunction::kCanReturnErrors),
