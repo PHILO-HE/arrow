@@ -313,6 +313,11 @@ CAST_NUMERIC_FROM_STRING(double, arrow::DoubleType, FLOAT8)
   OUT_TYPE gdv_fn_cast##TYPE_NAME##_or_null_utf8(int64_t context, const char* data,  \
                                     int32_t len, bool in_valid, bool* out_valid) {   \
     OUT_TYPE val = 0;                                                                \
+    *out_valid = true;                                                               \
+    if (!in_valid) {                                                                 \
+      *out_valid = false;                                                            \
+      return val;                                                                    \
+    }                                                                                \
     /* trim leading and trailing spaces */                                           \
     int32_t trimmed_len;                                                             \
     int32_t start = 0, end = len - 1;                                                \
@@ -325,7 +330,6 @@ CAST_NUMERIC_FROM_STRING(double, arrow::DoubleType, FLOAT8)
     trimmed_len = end - start + 1;                                                   \
     const char* trimmed_data = data + start;                                         \
     if (!arrow::internal::ParseValue<ARROW_TYPE>(trimmed_data, trimmed_len, &val)) { \
-      in_valid = true;                                                               \
       *out_valid = false;                                                            \
     }                                                                                \
     return val;                                                                      \
