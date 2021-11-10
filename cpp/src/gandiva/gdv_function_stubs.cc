@@ -564,6 +564,12 @@ void ExportedStubFunctions::AddMappings(Engine* engine) const {
   engine->AddGlobalMappingForFunc("gdv_fn_castINT_utf8", types->i32_type(), args,
                                   reinterpret_cast<void*>(gdv_fn_castINT_utf8));
 
+  args = {types->i64_type(),     // int64_t context_ptr
+          types->i8_ptr_type(),  // const char* data
+          types->i32_type(),    // int32_t lenr
+          types->i1_type(),    // bool in2_validity
+          types->ptr_type(types->i8_type())};  // bool* out_valid
+
   engine->AddGlobalMappingForFunc("gdv_fn_castINT_or_null_utf8", types->i32_type(), args,
                                   reinterpret_cast<void*>(gdv_fn_castINT_or_null_utf8));
 
@@ -574,6 +580,12 @@ void ExportedStubFunctions::AddMappings(Engine* engine) const {
   engine->AddGlobalMappingForFunc("gdv_fn_castBIGINT_utf8", types->i64_type(), args,
                                   reinterpret_cast<void*>(gdv_fn_castBIGINT_utf8));
   
+  args = {types->i64_type(),     // int64_t context_ptr
+          types->i8_ptr_type(),  // const char* data
+          types->i32_type(),    // int32_t lenr
+          types->i1_type(),    // bool in2_validity
+          types->ptr_type(types->i8_type())};  // bool* out_valid
+
   engine->AddGlobalMappingForFunc("gdv_fn_castBIGINT_or_null_utf8", types->i64_type(), args,
                                   reinterpret_cast<void*>(gdv_fn_castBIGINT_or_null_utf8));
 
@@ -583,6 +595,12 @@ void ExportedStubFunctions::AddMappings(Engine* engine) const {
 
   engine->AddGlobalMappingForFunc("gdv_fn_castFLOAT4_utf8", types->float_type(), args,
                                   reinterpret_cast<void*>(gdv_fn_castFLOAT4_utf8));
+
+  args = {types->i64_type(),     // int64_t context_ptr
+          types->i8_ptr_type(),  // const char* data
+          types->i32_type(),    // int32_t lenr
+          types->i1_type(),    // bool in2_validity
+          types->ptr_type(types->i8_type())};  // bool* out_valid
 
   engine->AddGlobalMappingForFunc("gdv_fn_castFLOAT4_or_null_utf8", types->float_type(), args,
                                   reinterpret_cast<void*>(gdv_fn_castFLOAT4_or_null_utf8));
@@ -594,6 +612,12 @@ void ExportedStubFunctions::AddMappings(Engine* engine) const {
   engine->AddGlobalMappingForFunc("gdv_fn_castFLOAT8_utf8", types->double_type(), args,
                                   reinterpret_cast<void*>(gdv_fn_castFLOAT8_utf8));
   
+  args = {types->i64_type(),     // int64_t context_ptr
+          types->i8_ptr_type(),  // const char* data
+          types->i32_type(),    // int32_t lenr
+          types->i1_type(),    // bool in2_validity
+          types->ptr_type(types->i8_type())};  // bool* out_valid
+
   engine->AddGlobalMappingForFunc("gdv_fn_castFLOAT8_or_null_utf8", types->double_type(), args,
                                   reinterpret_cast<void*>(gdv_fn_castFLOAT8_or_null_utf8));
 
