@@ -55,7 +55,7 @@ bool gdv_fn_ilike_utf8_utf8(int64_t ptr, const char* data, int data_len,
                             const char* pattern, int pattern_len);
                             
 const uint8_t* gdv_fn_get_json_object_utf8_utf8(int64_t ptr, const char* data, int data_len,
-                           const char* pattern, int pattern_len, int32_t* out_len);
+                           const char* pattern, int pattern_len, int32_t* out_len, bool in_valid, bool* out_valid);
 
 int64_t gdv_fn_to_date_utf8_utf8_int32(int64_t context, int64_t ptr, const char* data,
                                        int data_len, bool in1_validity,

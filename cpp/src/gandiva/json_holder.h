@@ -40,7 +40,8 @@ class GANDIVA_EXPORT JsonHolder : public FunctionHolder {
   static Status Make(std::shared_ptr<JsonHolder>* holder);
 
   //TODO(): should try to return const uint8_t *
-  const uint8_t* operator()(ExecutionContext* ctx, const std::string& json_str, const std::string& json_path, int32_t* out_len);
+  const uint8_t* operator()(ExecutionContext* ctx, const std::string& json_str, const std::string& json_path, int32_t* out_len, 
+  bool in_valid, bool* out_valid);
   
   arrow::json::ParseOptions parse_options_ = arrow::json::ParseOptions::Defaults();
   arrow::json::ReadOptions read_options_ = arrow::json::ReadOptions::Defaults();

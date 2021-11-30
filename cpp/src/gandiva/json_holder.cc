@@ -34,7 +34,13 @@ Status JsonHolder::Make(std::shared_ptr<JsonHolder>* holder) {
   return Status::OK();
 }
 
-const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std::string& json_str, const std::string& json_path, int32_t* out_len) {
+const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std::string& json_str, const std::string& json_path, 
+int32_t* out_len, bool in_valid, bool* out_valid) {
+   *out_valid = true;
+   if (!in_valid) {
+      *out_valid = false;
+      return nullptr;
+    }  
  
   std::unique_ptr<arrow::json::BlockParser> parser;
   (arrow::json::BlockParser::Make(parse_options_, &parser));
@@ -46,17 +52,20 @@ const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std:
   //json_path example: $.col_14, will extract col_14 here
   // needs to gurad failure here
   if (json_path.length() < 3) {
+    *out_valid = false;
     return nullptr;
   }
   auto col_name = json_path.substr(2);
   // illegal json string.
   if (struct_parsed == nullptr) {
+    *out_valid = false;
     return nullptr;
   }
   auto dict_parsed = std::dynamic_pointer_cast<arrow::DictionaryArray>(
       struct_parsed->GetFieldByName(col_name));
   // no data contained for given field.
   if (dict_parsed == nullptr) {
+    *out_valid = false;
     return nullptr;
   }
   auto dict_array = dict_parsed->dictionary();

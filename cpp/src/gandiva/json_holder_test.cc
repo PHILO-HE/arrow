@@ -41,23 +41,26 @@ TEST_F(TestJsonHolder, TestJson) {
 
   int32_t out_len;
 
-  const uint8_t* data = get_json_object(&execution_context_, R"({"hello": 3.5})", "$.hello", &out_len);
+  bool in_valid = true; 
+  bool* out_valid;
+
+  const uint8_t* data = get_json_object(&execution_context_, R"({"hello": 3.5})", "$.hello", &out_len, in_valid, out_valid);
   EXPECT_EQ(std::string((char*)data, out_len), "3.5");
   
   // no data contained for given field.
-  data = get_json_object(&execution_context_, R"({"hello": 3.5})", "$.hi", &out_len);
+  data = get_json_object(&execution_context_, R"({"hello": 3.5})", "$.hi", &out_len, in_valid, out_valid);
   EXPECT_EQ(data, nullptr);
 
   // illegal json string.
-  data = get_json_object(&execution_context_, R"({"hello"-3.5})", "$.hello", &out_len);
+  data = get_json_object(&execution_context_, R"({"hello"-3.5})", "$.hello", &out_len, in_valid, out_valid);
   EXPECT_EQ(data, nullptr);
   
   // illegal field is given.
-  data = get_json_object(&execution_context_, R"({"hello": 3.5})", "$xx", &out_len);
+  data = get_json_object(&execution_context_, R"({"hello": 3.5})", "$xx", &out_len, in_valid, out_valid);
   EXPECT_EQ(data, nullptr);
 
   // illegal field is given and a short string field.
-  data = get_json_object(&execution_context_, R"({"hello": 3.5})", "$", &out_len);
+  data = get_json_object(&execution_context_, R"({"hello": 3.5})", "$", &out_len, in_valid, out_valid);
   EXPECT_EQ(data, nullptr);
 }
 

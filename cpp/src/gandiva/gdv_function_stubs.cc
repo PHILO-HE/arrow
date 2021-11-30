@@ -39,10 +39,10 @@
 extern "C" {
 
 const uint8_t* gdv_fn_get_json_object_utf8_utf8(int64_t ptr, const char* data, int data_len,
-                           const char* pattern, int pattern_len, int32_t* out_len) {
+                           const char* pattern, int pattern_len, int32_t* out_len, bool in_valid, bool* out_valid) {
   gandiva::ExecutionContext* context = reinterpret_cast<gandiva::ExecutionContext*>(ptr);
   gandiva::JsonHolder* holder = reinterpret_cast<gandiva::JsonHolder*>(ptr);
-  return (*holder)(context, std::string(data, data_len), std::string(pattern, pattern_len), out_len);
+  return (*holder)(context, std::string(data, data_len), std::string(pattern, pattern_len), out_len, in_valid, out_valid);
 }
 
 bool gdv_fn_like_utf8_utf8(int64_t ptr, const char* data, int data_len,
@@ -497,8 +497,9 @@ void ExportedStubFunctions::AddMappings(Engine* engine) const {
           types->i32_type(),     // int data_len
           types->i8_ptr_type(),  // const char* pattern
           types->i32_type(),     // int pattern_len
-          types->i32_ptr_type()};   // int out_len 
-
+          types->i32_ptr_type(), // int out_len 
+          types->i1_type(),      // bool in2_validity
+          types->ptr_type(types->i8_type())};  // bool* out_valid
   engine->AddGlobalMappingForFunc("gdv_fn_get_json_object_utf8_utf8",
                                   types->i8_ptr_type() /*return_type*/, args,
                                   reinterpret_cast<void*>(gdv_fn_get_json_object_utf8_utf8));
