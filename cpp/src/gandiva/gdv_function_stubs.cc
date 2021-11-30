@@ -38,10 +38,10 @@
 
 extern "C" {
 
-const uint8_t* gdv_fn_get_json_object_utf8_utf8(int64_t ptr, const char* data, int data_len,
-                           const char* pattern, int pattern_len, int32_t* out_len, bool in_valid, bool* out_valid) {
+const uint8_t* gdv_fn_get_json_object_utf8_utf8(int64_t ptr, const char* data, int data_len, bool in1_valid,
+                           const char* pattern, int pattern_len, bool in2_valid, int32_t* out_len, bool* out_valid) {
   *out_valid = true;
-  if (!in_valid) {
+  if (!in1_valid || !in2_valid) {
     *out_valid = false;
     return nullptr;
   }  
@@ -504,10 +504,11 @@ void ExportedStubFunctions::AddMappings(Engine* engine) const {
   args = {types->i64_type(),     // int64_t ptr
           types->i8_ptr_type(),  // const char* data
           types->i32_type(),     // int data_len
+          types->i1_type(),      // bool in1_validity
           types->i8_ptr_type(),  // const char* pattern
           types->i32_type(),     // int pattern_len
-          types->i32_ptr_type(), // int out_len 
           types->i1_type(),      // bool in2_validity
+          types->i32_ptr_type(), // int out_len 
           types->ptr_type(types->i8_type())};  // bool* out_valid
   engine->AddGlobalMappingForFunc("gdv_fn_get_json_object_utf8_utf8",
                                   types->i8_ptr_type() /*return_type*/, args,
@@ -666,7 +667,7 @@ void ExportedStubFunctions::AddMappings(Engine* engine) const {
   args = {types->i64_type(),     // int64_t context_ptr
           types->i8_ptr_type(),  // const char* data
           types->i32_type(),    // int32_t lenr
-          types->i1_type(),    // bool in2_validity
+          types->i1_type(),    // bool in1_validity
           types->ptr_type(types->i8_type())};  // bool* out_valid
 
   engine->AddGlobalMappingForFunc("gdv_fn_castINT_or_null_utf8", types->i32_type(), args,
@@ -682,7 +683,7 @@ void ExportedStubFunctions::AddMappings(Engine* engine) const {
   args = {types->i64_type(),     // int64_t context_ptr
           types->i8_ptr_type(),  // const char* data
           types->i32_type(),    // int32_t lenr
-          types->i1_type(),    // bool in2_validity
+          types->i1_type(),    // bool in1_validity
           types->ptr_type(types->i8_type())};  // bool* out_valid
 
   engine->AddGlobalMappingForFunc("gdv_fn_castBIGINT_or_null_utf8", types->i64_type(), args,
@@ -698,7 +699,7 @@ void ExportedStubFunctions::AddMappings(Engine* engine) const {
   args = {types->i64_type(),     // int64_t context_ptr
           types->i8_ptr_type(),  // const char* data
           types->i32_type(),    // int32_t lenr
-          types->i1_type(),    // bool in2_validity
+          types->i1_type(),    // bool in1_validity
           types->ptr_type(types->i8_type())};  // bool* out_valid
 
   engine->AddGlobalMappingForFunc("gdv_fn_castFLOAT4_or_null_utf8", types->float_type(), args,
@@ -714,7 +715,7 @@ void ExportedStubFunctions::AddMappings(Engine* engine) const {
   args = {types->i64_type(),     // int64_t context_ptr
           types->i8_ptr_type(),  // const char* data
           types->i32_type(),    // int32_t lenr
-          types->i1_type(),    // bool in2_validity
+          types->i1_type(),    // bool in1_validity
           types->ptr_type(types->i8_type())};  // bool* out_valid
 
   engine->AddGlobalMappingForFunc("gdv_fn_castFLOAT8_or_null_utf8", types->double_type(), args,
