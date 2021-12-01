@@ -38,19 +38,22 @@
 
 extern "C" {
 
-const uint8_t* gdv_fn_get_json_object_utf8_utf8(int64_t ptr, const char* data, int data_len, bool in1_valid,
+const uint8_t* gdv_fn_get_json_object_utf8_utf8(int64_t ptr, int64_t holder_ptr, const char* data, int data_len, bool in1_valid,
                            const char* pattern, int pattern_len, bool in2_valid, bool* out_valid, int32_t* out_len) {
-  *out_valid = true;
   if (!in1_valid || !in2_valid) {
     *out_valid = false;
-    return nullptr;
+    *out_len = 0;
+    return reinterpret_cast<const uint8_t*>("");
   }  
   gandiva::ExecutionContext* context = reinterpret_cast<gandiva::ExecutionContext*>(ptr);
-  gandiva::JsonHolder* holder = reinterpret_cast<gandiva::JsonHolder*>(ptr);
+  gandiva::JsonHolder* holder = reinterpret_cast<gandiva::JsonHolder*>(holder_ptr);
   auto res = (*holder)(context, std::string(data, data_len), std::string(pattern, pattern_len), out_len);
   if (res == nullptr) {
     *out_valid = false;
+    *out_len = 0;
+    return reinterpret_cast<const uint8_t*>("");
   }
+  *out_valid = true;
   return res;
 }
 
@@ -502,6 +505,7 @@ void ExportedStubFunctions::AddMappings(Engine* engine) const {
 
   // gdv_fn_get_json_object_utf8_utf8
   args = {types->i64_type(),     // int64_t ptr
+          types->i64_type(),     // int64_t holder_ptr
           types->i8_ptr_type(),  // const char* data
           types->i32_type(),     // int data_len
           types->i1_type(),      // bool in1_validity
