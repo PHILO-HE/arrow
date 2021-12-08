@@ -749,11 +749,18 @@ TEST(TestTime, castVarcharDate) {
   gdv_int32 out_len;
   gdv_date64 date64 = castDATE_utf8(context_ptr, "2020-12-1", 9);
   gdv_date32 date32 = castDATE32_date64(date64);
+  // Test yyyy-MM-dd format
   const char* out = castVARCHAR_date32_int64(context_ptr, date32, 10L, &out_len);
   EXPECT_EQ(std::string(out, out_len), "2020-12-01");
-
+  // Test yyyyMMdd format
   out = castVARCHAR_date32_int64(context_ptr, date32, 8L, &out_len);
   EXPECT_EQ(std::string(out, out_len), "20201201");
+  
+  // Test date before unix epoch
+  date64 = castDATE_utf8(context_ptr, "1967-12-1", 9);
+  date32 = castDATE32_date64(date64);
+  out = castVARCHAR_date32_int64(context_ptr, date32, 10L, &out_len);
+  EXPECT_EQ(std::string(out, out_len), "1967-12-01");
 }
 
 }  // namespace gandiva
