@@ -687,7 +687,7 @@ const char* castVARCHAR_date32_int64(gdv_int64 context, gdv_date32 in_day,
 
   int res = -1;
   if (length == 10) {
-    // yyyy-MM-dd hh:mm:ss.sss
+    // yyyy-MM-dd
     res = snprintf(char_buffer, char_buffer_length,
                      "%04" PRId64 "-%02" PRId64 "-%02" PRId64, year, month, day);
   } else if (length == 8) {
