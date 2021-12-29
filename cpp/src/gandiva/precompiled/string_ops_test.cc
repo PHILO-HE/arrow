@@ -999,6 +999,19 @@ TEST(TestStringOps, TestReplace) {
   ctx.Reset();
 }
 
+TEST(TestStringOps, TestTranslate) {
+  gandiva::ExecutionContext ctx;
+  uint64_t ctx_ptr = reinterpret_cast<gdv_int64>(&ctx);
+  gdv_int32 out_len = 0;
+  const char* out_str;
+
+  out_str = translate_utf8_utf8_utf8(ctx_ptr, "ab[cd]", 6, "[]", 2, "", 0, &out_len);
+  EXPECT_EQ(std::string(out_str, out_len), "abcd");
+
+  out_str = translate_utf8_utf8_utf8(ctx_ptr, "ab[cd]", 6, "[]", 2, "#", 1, &out_len);
+  EXPECT_EQ(std::string(out_str, out_len), "ab#cd");
+}
+
 TEST(TestStringOps, TestBinaryString) {
   gandiva::ExecutionContext ctx;
   uint64_t ctx_ptr = reinterpret_cast<gdv_int64>(&ctx);
