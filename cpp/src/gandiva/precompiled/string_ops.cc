@@ -17,7 +17,7 @@
 
 // String functions
 #include "arrow/util/value_parsing.h"
-#include <map>
+
 extern "C" {
 
 #include <limits.h>
@@ -1421,37 +1421,6 @@ const char* replace_utf8_utf8_utf8(gdv_int64 context, const char* text,
   return replace_with_max_len_utf8_utf8_utf8(context, text, text_len, from_str,
                                              from_str_len, to_str, to_str_len, 65535,
                                              out_len);
-}
-
-FORCE_INLINE
-const char* translate_utf8_utf8_utf8(gdv_int64 context, const char* text,
-                                   gdv_int32 text_len, const char* matching_str,
-                                   gdv_int32 matching_str_len, const char* replace_str,
-                                   gdv_int32 replace_str_len, gdv_int32* out_len) {
-  char* res = new char[text_len];
-  std::map<char, char> replace_map;
-  for (int i = 0; i < matching_str_len; i++) {
-    if (i >= replace_str_len) {
-      replace_map[matching_str[i]] = '\0';
-    } else {
-      replace_map[matching_str[i]] = replace_str[i];
-    }
-  }
-  int j = 0;
-  for (int i = 0; i < text_len; i++) {
-    if (replace_map.find(text[i]) == replace_map.end()) {
-      res[j++] = text[i];
-      continue;
-    }
-    char replace_char = replace_map[text[i]];
-    if (replace_char != '\0') {
-      res[j++] = replace_char;
-    }
-  }
-  *out_len = j;
-  auto result_buffer = reinterpret_cast<char*>(gdv_fn_context_arena_malloc(context, *out_len));
-  memcpy(result_buffer, std::string((char*)res, *out_len).data(), *out_len);
-  return result_buffer;
 }
 
 FORCE_INLINE

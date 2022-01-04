@@ -172,6 +172,11 @@ std::vector<NativeFunction> GetStringFunctionRegistry() {
                      kResultNullInternal, "gdv_fn_get_json_object_utf8_utf8",
                      NativeFunction::kNeedsContext | NativeFunction::kNeedsFunctionHolder |
                      NativeFunction::kCanReturnErrors),
+      
+      NativeFunction("translate", {}, DataTypeVector{utf8(), utf8(), utf8()}, utf8(),
+                     kResultNullIfNull, "gdv_fn_translate_utf8_utf8_utf8",
+                     NativeFunction::kNeedsContext | NativeFunction::kNeedsFunctionHolder | 
+                     NativeFunction::kCanReturnErrors),
 
       NativeFunction("ltrim", {}, DataTypeVector{utf8(), utf8()}, utf8(),
                      kResultNullIfNull, "ltrim_utf8_utf8", NativeFunction::kNeedsContext),
@@ -294,10 +299,6 @@ std::vector<NativeFunction> GetStringFunctionRegistry() {
 
       NativeFunction("replace", {}, DataTypeVector{utf8(), utf8(), utf8()}, utf8(),
                      kResultNullIfNull, "replace_utf8_utf8_utf8",
-                     NativeFunction::kNeedsContext | NativeFunction::kCanReturnErrors),
-      
-      NativeFunction("translate", {}, DataTypeVector{utf8(), utf8(), utf8()}, utf8(),
-                     kResultNullIfNull, "translate_utf8_utf8_utf8",
                      NativeFunction::kNeedsContext | NativeFunction::kCanReturnErrors),
 
       NativeFunction("binary_string", {}, DataTypeVector{utf8()}, binary(),
