@@ -19,7 +19,6 @@
 
 #include <unordered_map>
 #include "gandiva/node.h"
-#include "gandiva/regex_util.h"
 
 namespace gandiva {
 

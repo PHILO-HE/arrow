@@ -59,9 +59,9 @@ const uint8_t* gdv_fn_get_json_object_utf8_utf8(int64_t ptr, int64_t holder_ptr,
 }
 
 const uint8_t* gdv_fn_translate_utf8_utf8_utf8(int64_t ptr, int64_t holder_ptr, const char* text, 
-                                            int text_len, const char* matching_str,
-                                            int matching_str_len, const char* replace_str,
-                                            int replace_str_len, int32_t* out_len) {
+                                               int text_len, const char* matching_str,
+                                               int matching_str_len, const char* replace_str,
+                                               int replace_str_len, int32_t* out_len) {
   gandiva::ExecutionContext* context = reinterpret_cast<gandiva::ExecutionContext*>(ptr);
   gandiva::TranslateHolder* holder = reinterpret_cast<gandiva::TranslateHolder*>(holder_ptr);
   auto res = (*holder)(context, std::string(text, text_len), std::string(matching_str, matching_str_len),
