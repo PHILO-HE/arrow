@@ -21,8 +21,8 @@
 namespace gandiva {
 Status RandomGeneratorHolder::Make(const FunctionNode& node,
                                    std::shared_ptr<RandomGeneratorHolder>* holder) {
-  ARROW_RETURN_IF(node.children().size() > 1,
-                  Status::Invalid("'random' function requires at most one parameter"));
+  ARROW_RETURN_IF(node.children().size() > 2,
+                  Status::Invalid("'random' function requires at most two parameters"));
 
   if (node.children().size() == 0) {
     *holder = std::shared_ptr<RandomGeneratorHolder>(new RandomGeneratorHolder());
@@ -38,12 +38,19 @@ Status RandomGeneratorHolder::Make(const FunctionNode& node,
       literal_type != arrow::Type::INT32 && literal_type != arrow::Type::INT64,
       Status::Invalid("'random' function requires an int32/int64 literal as parameter"));
 
+  // The offset is a partition ID in spark SQL. It is used to achieve genuine random distribution globally.
+  int32_t offset = 0;
+  if (node.children().size() > 1) {
+    auto offset_node = dynamic_cast<LiteralNode*>(node.children().at(1).get());
+    offset = offset_node->is_null() ? 0 : arrow::util::get<int32_t>(offset_node->holder());
+  }
   if (literal_type == arrow::Type::INT32) {
-    *holder = std::shared_ptr<RandomGeneratorHolder>(new RandomGeneratorHolder(
-      literal->is_null() ? 0 : arrow::util::get<int32_t>(literal->holder())));
+    int32_t seed = literal->is_null() ? 0 : arrow::util::get<int32_t>(literal->holder());
+    *holder = std::shared_ptr<RandomGeneratorHolder>(new RandomGeneratorHolder(seed + offset));
   } else {
+    int64_t seed = literal->is_null() ? 0 : arrow::util::get<int64_t>(literal->holder());
     *holder = std::shared_ptr<RandomGeneratorHolder>(new RandomGeneratorHolder(
-      literal->is_null() ? 0 : arrow::util::get<int64_t>(literal->holder())));
+      seed + static_cast<int64_t>(offset)));
   }
   return Status::OK();
 }
