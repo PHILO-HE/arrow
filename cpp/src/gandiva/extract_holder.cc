@@ -22,10 +22,6 @@
 
 namespace gandiva {
 
-  static bool IsArrowStringLiteral(arrow::Type::type type) {
-    return type == arrow::Type::STRING || type == arrow::Type::BINARY;
-  }
-
   Status ExtractHolder::Make(const FunctionNode& node, std::shared_ptr<ExtractHolder>* holder) {
     ARROW_RETURN_IF(node.children().size() != 3,
                     Status::Invalid("'extract' function requires three parameters"));
