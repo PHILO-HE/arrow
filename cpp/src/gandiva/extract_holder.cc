@@ -29,14 +29,23 @@ namespace gandiva {
   Status ExtractHolder::Make(const FunctionNode& node, std::shared_ptr<ExtractHolder>* holder) {
     ARROW_RETURN_IF(node.children().size() != 3,
                     Status::Invalid("'extract' function requires three parameters"));
-    auto literal = dynamic_cast<LiteralNode*>(node.children().at(1).get());
+    auto pattern_node = dynamic_cast<LiteralNode*>(node.children().at(1).get());
     ARROW_RETURN_IF(
-        literal == nullptr,
+        pattern_node == nullptr,
         Status::Invalid("'extract' function requires a literal as the second parameter"));
-    auto literal_type = literal->return_type()->id();
-    ARROW_RETURN_IF(!IsArrowStringLiteral(literal_type), Status::Invalid(
-            "'extract' function requires to return a string"));
-    return Make(arrow::util::get<std::string>(literal->holder()), holder);
+    auto pattern_node_type = pattern_node->return_type()->id();
+    ARROW_RETURN_IF(!IsArrowStringLiteral(pattern_node_type), Status::Invalid(
+            "'extract' function requires a string literal as the second parameter"));
+
+    std::string pattern = arrow::util::get<std::string>(pattern_node->holder());
+    auto index_node = dynamic_cast<LiteralNode*>(node.children().at(2).get());
+    auto index = arrow::util::get<int32_t>(index_node->holder());
+    // If regex group index is 0, which means matching the entire regular expression,
+    // wrap the pattern with "()".
+    if (index == 0) {
+      pattern = "(" + pattern + ")";
+    }
+    return Make(pattern, holder);
   }
 
   Status ExtractHolder::Make(const std::string& sql_pattern,
