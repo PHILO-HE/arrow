@@ -56,22 +56,22 @@ namespace gandiva {
     }
     if (idx < 0) {
       return_error(ctx, user_input_as_str, "the specified group index should NOT be negative!");
-    }
-    if (idx == 0) {
-      return_error(ctx, user_input_as_str, "the specified group index is 0, not supported!");
       *out_length = 0;
       return "";
     }
 
-    RE2::Arg* args[groups_num];
-    for (int i = 0; i < groups_num; i++) {
-      args[i] = new RE2::Arg;
+    bool matched = false;
+    if (idx == 0) {
+      matched = RE2::PartialMatch(user_input_as_str, re2_, &out);
+    } else {
+      RE2::Arg *args[groups_num];
+      for (int i = 0; i < groups_num; i++) {
+        args[i] = new RE2::Arg;
+      }
+      *(args[idx - 1]) = &out;
+      // Use re2_ instead of pattern_ for better performance.
+      matched = RE2::PartialMatchN(user_input_as_str, re2_, args, groups_num);
     }
-    *(args[idx - 1]) = &out;
-
-    // Use re2_ instead of pattern_ for better performance.
-    bool matched = RE2::PartialMatchN(user_input_as_str, re2_, args, groups_num);
-
     if (!matched) {
       *out_length = 0;
       return "";
