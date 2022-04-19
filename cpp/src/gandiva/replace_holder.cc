@@ -32,9 +32,10 @@ Status ReplaceHolder::Make(const FunctionNode& node,
                   Status::Invalid("'replace' function requires three parameters"));
 
   auto literal = dynamic_cast<LiteralNode*>(node.children().at(1).get());
-  ARROW_RETURN_IF(
-      literal == nullptr,
-      Status::Invalid("'replace' function requires a literal as the second parameter"));
+  // TO be compatible with spark. Allow non-literal as 2nd parameter.
+  //ARROW_RETURN_IF(
+  //    literal == nullptr,
+  //    Status::Invalid("'replace' function requires a literal as the second parameter"));
 
   auto literal_type = literal->return_type()->id();
   ARROW_RETURN_IF(
