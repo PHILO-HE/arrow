@@ -1092,4 +1092,33 @@ TEST(TestStringOps, TestSplitPart) {
   EXPECT_EQ(std::string(out_str, out_len), "ååçåå");
 }
 
+TEST(TestStringOps, TestSubstr_index) {
+  gandiva::ExecutionContext ctx;
+  uint64_t ctx_ptr = reinterpret_cast<gdv_int64>(&ctx);
+  gdv_int32 out_len = 0;
+  const char* out_str;
+
+  // Count = 0
+  out_str = substr_index_utf8_utf8_int32(ctx_ptr, "www.apache.org", 14, ".", 1, 0, &out_len);
+  EXPECT_EQ(std::string(out_str, out_len), "");
+
+  out_str = substr_index_utf8_utf8_int32(ctx_ptr, "www.apache.org", 14, ".", 1, 1, &out_len);
+  EXPECT_EQ(std::string(out_str, out_len), "www");
+
+  out_str = substr_index_utf8_utf8_int32(ctx_ptr, "www.apache.org", 14, ".", 1, 2, &out_len);
+  EXPECT_EQ(std::string(out_str, out_len), "www.apache");
+
+  // The actual delimiter count in a string is less than the specified count.
+  out_str = substr_index_utf8_utf8_int32(ctx_ptr, "www.apache.org", 14, ".", 1, 3, &out_len);
+  EXPECT_EQ(std::string(out_str, out_len), "www.apache.org");
+
+  // Negative count.
+  out_str = substr_index_utf8_utf8_int32(ctx_ptr, "www.apache.org", 14, ".", 1, -1, &out_len);
+  EXPECT_EQ(std::string(out_str, out_len), "org");
+
+  // Negative count.
+  out_str = substr_index_utf8_utf8_int32(ctx_ptr, "www.apache.org", 14, ".", 1, -2, &out_len);
+  EXPECT_EQ(std::string(out_str, out_len), "apache.org");
+
+}
 }  // namespace gandiva
