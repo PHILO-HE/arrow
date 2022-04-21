@@ -738,8 +738,6 @@ const char* substr_index_utf8_utf8_int32(gdv_int64 ctx, const char* input, gdv_i
   }
 
   std::string input_str(input, in_len);
-  std::string delim_str(delim, delim_len);
-
   std::size_t index;
   if (count > 0) {
     int n = 0;
