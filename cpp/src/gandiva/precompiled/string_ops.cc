@@ -744,25 +744,23 @@ const char* substr_index_utf8_utf8_int32(gdv_int64 ctx, const char* input, gdv_i
   if (count > 0) {
     int n = 0;
     index = 0;
-    while (n < count) {
+    while (n++ < count) {
       index = input_str.find(delim, index);
       if (index == std::string::npos) {
         break;
       }
-      n++;
       if (n < count) {
         index++;
       }
     }
   } else {
     int n = 0;
-    index = in_len;
-    while (n < -count) {
+    index = in_len - 1;
+    while (n++ < -count) {
       index = input_str.rfind(delim, index);
       if (index == std::string::npos) {
         break;
       }
-      n++;
       if (n < -count) {
         index--;
       }
@@ -770,7 +768,7 @@ const char* substr_index_utf8_utf8_int32(gdv_int64 ctx, const char* input, gdv_i
   }
 
   if (index == std::string::npos) {
-    *out_len = static_cast<int32_t>(input_str.size());
+    *out_len = static_cast<int32_t>(input_str.length());
     char* result_buffer = reinterpret_cast<char*>(gdv_fn_context_arena_malloc(ctx, *out_len));
     if (result_buffer == NULLPTR) {
       gdv_fn_context_set_error_msg(ctx, "Could not allocate memory for result");
@@ -786,8 +784,9 @@ const char* substr_index_utf8_utf8_int32(gdv_int64 ctx, const char* input, gdv_i
     *out_len = static_cast<int32_t>(index);
     result = input_str.substr(0, *out_len);
   } else {
-    *out_len = static_cast<int32_t>(input_str.size() - index - 1);
-    result = input_str.substr(index + 1, *out_len);
+    // Delimiter length can be greater than 1,
+    *out_len = static_cast<int32_t>(input_str.length() - index - delim_len);
+    result = input_str.substr(index + delim_len, *out_len);
   }
 
   char* result_buffer = reinterpret_cast<char*>(gdv_fn_context_arena_malloc(ctx, *out_len));
