@@ -930,8 +930,9 @@ TEST(TestStringOps, TestLocate) {
 
   pos = locate_utf8_utf8_int32(ctx_ptr, "bar", 3, "barbar", 6, 0);
   EXPECT_EQ(pos, 0);
-  EXPECT_THAT(ctx.get_error(),
-              ::testing::HasSubstr("Start position must be greater than 0"));
+  // To be compatible with spark, it is allowed to specify 0 as the start position.
+  //EXPECT_THAT(ctx.get_error(),
+  //            ::testing::HasSubstr("Start position must be greater than 0"));
   ctx.Reset();
 
   pos = locate_utf8_utf8_int32(ctx_ptr, "bar", 3, "barbar", 6, 7);
