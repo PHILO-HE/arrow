@@ -37,7 +37,7 @@ class GANDIVA_EXPORT SubStrIndexHolder : public FunctionHolder {
   static Status Make(const FunctionNode& node, std::shared_ptr<SubStrIndexHolder>* holder);
   static Status Make(std::shared_ptr<SubStrIndexHolder>* holder);
 
-  const uint8_t* operator()(gandiva::ExecutionContext* ctx, std::string input_str, 
+  const char* operator()(gandiva::ExecutionContext* ctx, std::string input_str,
                             std::string delim_str, int count, int32_t* out_len);
 };
 

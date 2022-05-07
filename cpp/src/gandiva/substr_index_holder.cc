@@ -39,6 +39,9 @@ const uint8_t* SubStrIndexHolder::operator()(gandiva::ExecutionContext* ctx, std
     return "";
   }
 
+  auto in_len = input_str.length();
+  auto delim_len = delim.length();
+
   std::size_t index;
   if (count > 0) {
     int n = 0;

@@ -198,7 +198,7 @@ std::vector<NativeFunction> GetStringFunctionRegistry() {
 
       NativeFunction("substr_index", {"substring_index"},
                      DataTypeVector{utf8() /*input*/, utf8() /*delimiter*/, int32() /*count*/},
-                     utf8(), kResultNullIfNull, "substr_index_utf8_utf8_int32",
+                     utf8(), kResultNullIfNull, "gdv_fn_substr_index_utf8_utf8_int32",
                      NativeFunction::kNeedsContext | NativeFunction::kNeedsFunctionHolder),
 
       NativeFunction("regexp_replace", {}, DataTypeVector{utf8(), utf8(), utf8()}, utf8(),

@@ -71,7 +71,7 @@ const uint8_t* gdv_fn_translate_utf8_utf8_utf8(int64_t ptr, int64_t holder_ptr, 
   return res;
 }
 
-const char* substr_index_utf8_utf8_int32(int64_t ptr, int64_t holder_ptr, const char* input, int in_len,
+const char* gdv_fn_substr_index_utf8_utf8_int32(int64_t ptr, int64_t holder_ptr, const char* input, int in_len,
                                          const char* delim, int delim_len, int count, int32_t* out_len) {
   gandiva::ExecutionContext* context = reinterpret_cast<gandiva::ExecutionContext*>(ptr);
   gandiva::SubStrIndexHolder* holder = reinterpret_cast<gandiva::SubStrIndexHolder*>(holder_ptr);
@@ -575,7 +575,7 @@ void ExportedStubFunctions::AddMappings(Engine* engine) const {
                                   types->i8_ptr_type() /*return types*/, args, 
                                   reinterpret_cast<void*>(gdv_fn_translate_utf8_utf8_utf8));
 
-  // gdv_fn_translate_utf8_utf8_utf8
+  // gdv_fn_substr_index_utf8_utf8_int32
   args = {types->i64_type(),      // int64_t ptr
           types->i64_type(),      // int64_t holder_ptr
           types->i8_ptr_type(),   // const char* input
@@ -584,7 +584,7 @@ void ExportedStubFunctions::AddMappings(Engine* engine) const {
           types->i32_type(),      // int delim_str_len
           types->i32_type(),      // int count
           types->i32_ptr_type()}; // int* out_len
-  engine->AddGlobalMappingForFunc("substr_index_utf8_utf8_int32", 
+  engine->AddGlobalMappingForFunc("gdv_fn_substr_index_utf8_utf8_int32",
                                   types->i8_ptr_type() /*return types*/, args, 
                                   reinterpret_cast<void*>(gdv_fn_translate_utf8_utf8_utf8));
 
