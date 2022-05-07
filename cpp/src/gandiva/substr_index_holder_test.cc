@@ -38,6 +38,7 @@ TEST_F(TestSubstrIndexHolder, TestSubstrIndex) {
 
   // Count = 0
   out_str = substr_index(ctx_ptr, "www.apache.org", ".", 0, &out_len);
+  EXPECT_EQ(out_len, 0);
   EXPECT_EQ(std::string(out_str, out_len), "");
 
   // Count = 1
@@ -50,6 +51,7 @@ TEST_F(TestSubstrIndexHolder, TestSubstrIndex) {
 
   // Boundary case.
   out_str = substr_index(ctx_ptr, "www.apache.org", "www", 1, &out_len);
+  EXPECT_EQ(out_len, 0);
   EXPECT_EQ(std::string(out_str, out_len), "");
 
   // The actual delimiter count in a string is less than the specified count.
@@ -70,6 +72,7 @@ TEST_F(TestSubstrIndexHolder, TestSubstrIndex) {
 
   // Boundary case for negative count.
   out_str = substr_index(ctx_ptr, "www.apache.org", "org", -1, &out_len);
+  EXPECT_EQ(out_len, 0);
   EXPECT_EQ(std::string(out_str, out_len), "");
 }
 
