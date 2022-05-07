@@ -586,7 +586,7 @@ void ExportedStubFunctions::AddMappings(Engine* engine) const {
           types->i32_ptr_type()}; // int* out_len
   engine->AddGlobalMappingForFunc("gdv_fn_substr_index_utf8_utf8_int32",
                                   types->i8_ptr_type() /*return types*/, args, 
-                                  reinterpret_cast<void*>(gdv_fn_translate_utf8_utf8_utf8));
+                                  reinterpret_cast<void*>(gdv_fn_substr_index_utf8_utf8_int32));
 
   // gdv_fn_like_utf8_utf8
   args = {types->i64_type(),     // int64_t ptr

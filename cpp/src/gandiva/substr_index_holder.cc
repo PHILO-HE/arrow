@@ -35,13 +35,12 @@ const char* SubstrIndexHolder::operator()(gandiva::ExecutionContext* ctx, std::s
                           std::string delim, int count, int32_t* out_len) {
   // No need to find delim when count = 0 and just return "".
   if (count == 0) {
-    out_len = 0;
+    *out_len = 0;
     return "";
   }
 
   auto in_len = input_str.length();
   auto delim_len = delim.length();
-
   std::size_t index;
   if (count > 0) {
     int n = 0;
