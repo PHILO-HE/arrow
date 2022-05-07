@@ -22,16 +22,16 @@
 
 namespace gandiva {
 
-Status SubStrIndexHolder::Make(const FunctionNode& node, std::shared_ptr<SubStrIndexHolder>* holder) {
+Status SubstrIndexHolder::Make(const FunctionNode& node, std::shared_ptr<SubstrIndexHolder>* holder) {
   return Make(holder);
 }
 
-Status SubStrIndexHolder::Make(std::shared_ptr<SubStrIndexHolder>* holder) {
-  *holder = std::shared_ptr<SubStrIndexHolder>(new SubStrIndexHolder());
+Status SubstrIndexHolder::Make(std::shared_ptr<SubstrIndexHolder>* holder) {
+  *holder = std::shared_ptr<SubstrIndexHolder>(new SubstrIndexHolder());
   return Status::OK();
 }
 
-const uint8_t* SubStrIndexHolder::operator()(gandiva::ExecutionContext* ctx, std::string input_str, 
+const char* SubstrIndexHolder::operator()(gandiva::ExecutionContext* ctx, std::string input_str, 
                           std::string delim, int count, int32_t* out_len) {
   // No need to find delim when count = 0 and just return "".
   if (count == 0) {

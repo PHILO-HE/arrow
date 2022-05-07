@@ -74,7 +74,7 @@ const uint8_t* gdv_fn_translate_utf8_utf8_utf8(int64_t ptr, int64_t holder_ptr, 
 const char* gdv_fn_substr_index_utf8_utf8_int32(int64_t ptr, int64_t holder_ptr, const char* input, int in_len,
                                          const char* delim, int delim_len, int count, int32_t* out_len) {
   gandiva::ExecutionContext* context = reinterpret_cast<gandiva::ExecutionContext*>(ptr);
-  gandiva::SubStrIndexHolder* holder = reinterpret_cast<gandiva::SubStrIndexHolder*>(holder_ptr);
+  gandiva::SubstrIndexHolder* holder = reinterpret_cast<gandiva::SubstrIndexHolder*>(holder_ptr);
   auto res = (*holder)(context, std::string(input, in_len), std::string(delim, delim_len), count, out_len);
   return res;
 }

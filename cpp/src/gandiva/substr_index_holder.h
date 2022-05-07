@@ -29,13 +29,13 @@
 namespace gandiva {
 
 /// Function Holder for SQL 'substring_index'
-class GANDIVA_EXPORT SubStrIndexHolder : public FunctionHolder {
+class GANDIVA_EXPORT SubstrIndexHolder : public FunctionHolder {
  public:
-  SubStrIndexHolder() {}
-  ~SubStrIndexHolder() override = default;
+  SubstrIndexHolder() {}
+  ~SubstrIndexHolder() override = default;
 
-  static Status Make(const FunctionNode& node, std::shared_ptr<SubStrIndexHolder>* holder);
-  static Status Make(std::shared_ptr<SubStrIndexHolder>* holder);
+  static Status Make(const FunctionNode& node, std::shared_ptr<SubstrIndexHolder>* holder);
+  static Status Make(std::shared_ptr<SubstrIndexHolder>* holder);
 
   const char* operator()(gandiva::ExecutionContext* ctx, std::string input_str,
                             std::string delim_str, int count, int32_t* out_len);
