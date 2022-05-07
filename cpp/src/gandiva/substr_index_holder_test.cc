@@ -20,15 +20,15 @@
 #include <gtest/gtest.h>
 
 namespace gandiva {
-class SubstrIndexHolder : public ::testing::Test {
+class TestSubstrIndexHolder : public ::testing::Test {
  protected:
   ExecutionContext ctx_;
 };
 
-TEST_F(SubstrIndexHolder, TestSubstrIndex) {
+TEST_F(TestSubstrIndexHolder, TestSubstrIndex) {
   std::shared_ptr<SubstrIndexHolder> substr_index_holder;
 
-  auto status = TranslateHolder::Make(&substr_index_holder);
+  auto status = SubstrIndexHolder::Make(&substr_index_holder);
   EXPECT_EQ(status.ok(), true) << status.message();
 
   auto substr_index = *substr_index_holder;

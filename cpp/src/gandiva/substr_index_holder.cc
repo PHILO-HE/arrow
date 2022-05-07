@@ -71,9 +71,9 @@ const char* SubstrIndexHolder::operator()(gandiva::ExecutionContext* ctx, std::s
 
   if (index == std::string::npos) {
     *out_len = static_cast<int32_t>(input_str.length());
-    char* result_buffer = reinterpret_cast<char*>(gdv_fn_context_arena_malloc(ctx, *out_len));
+    char* result_buffer = reinterpret_cast<char*>(ctx->arena()->Allocate(*out_len));
     if (result_buffer == NULLPTR) {
-      gdv_fn_context_set_error_msg(ctx, "Could not allocate memory for result");
+      ctx->set_error_msg("Could not allocate memory for result");
       *out_len = 0;
       return "";
     }
@@ -91,9 +91,9 @@ const char* SubstrIndexHolder::operator()(gandiva::ExecutionContext* ctx, std::s
     result = input_str.substr(index + delim_len, *out_len);
   }
 
-  char* result_buffer = reinterpret_cast<char*>(gdv_fn_context_arena_malloc(ctx, *out_len));
+  char* result_buffer = reinterpret_cast<char*>(ctx->arena()->Allocate(*out_len));
   if (result_buffer == NULLPTR) {
-    gdv_fn_context_set_error_msg(ctx, "Could not allocate memory for result");
+    ctx->set_error_msg("Could not allocate memory for result");
     *out_len = 0;
     return "";
   }
