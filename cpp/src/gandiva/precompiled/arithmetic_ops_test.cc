@@ -61,6 +61,17 @@ TEST(TestArithmeticOps, TestMod) {
   EXPECT_FALSE(context.has_error());
 }
 
+TEST(TestArithmeticOps, TestPMod) {
+  EXPECT_EQ(pmod_int8_int8(10, 3), 1);
+  EXPECT_EQ(pmod_int8_int8(-10, 3), 2);
+
+  EXPECT_EQ(pmod_int16_int16(10, 3), 1);
+  EXPECT_EQ(pmod_int16_int16(-10, 3), 2);
+
+  EXPECT_EQ(pmod_int32_int32(10, 3), 1);
+  EXPECT_EQ(pmod_int32_int32(-10, 3), 2);
+}
+
 TEST(TestArithmeticOps, TestDivide) {
   gandiva::ExecutionContext context;
   EXPECT_EQ(divide_int64_int64(reinterpret_cast<gdv_int64>(&context), 10, 0), 0);

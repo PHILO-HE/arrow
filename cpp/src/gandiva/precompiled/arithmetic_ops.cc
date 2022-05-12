@@ -36,6 +36,15 @@ extern "C" {
   INNER(NAME, float32, OP)             \
   INNER(NAME, float64, OP)
 
+// For same input/output types.
+#define NUMERIC_SINGLE_TYPES(INNER) \
+  INNER(int8)                       \
+  INNER(int16)                      \
+  INNER(int32)                      \
+  INNER(int64)                      \
+  INNER(float32)                    \
+  INNER(float64)                    \
+
 // Expand inner macros for all date/time types.
 #define DATE_TYPES(INNER, NAME, OP) \
   INNER(NAME, date64, OP)           \
@@ -99,6 +108,19 @@ gdv_float64 mod_float64_float64(int64_t context, gdv_float64 x, gdv_float64 y) {
   }
   return fmod(x, y);
 }
+
+// pmod, return the positive mod.
+#define PMOD(IN_TYPE)                                                             \
+  FORCE_INCLINE                                                                   \
+  gdv_##IN_TYPE pmod_##IN_TYPE_##IN_TYPE(gdv_##IN_TYPE in1, gdv_##IN_TYPE in2) {  \
+    gdv_##IN_TYPE res = static_cast<gdv_##IN_TYPE>(fmod(in1, in2));               \
+    if (res < 0) {                                                                \
+      res = static_cast<gdv_##IN_TYPE>(fmod(res + in2, in2));                     \
+    }                                                                             \
+    return res;                                                                   \
+  }
+NUMERIC_SINGLE_TYPES(PMOD)
+#undef PMOD
 
 // Relational binary fns : left, right params are same, return is bool.
 #define BINARY_RELATIONAL(NAME, TYPE, OP) \
