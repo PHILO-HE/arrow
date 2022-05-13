@@ -110,14 +110,24 @@ gdv_float64 mod_float64_float64(int64_t context, gdv_float64 x, gdv_float64 y) {
 }
 
 // pmod, return the positive mod.
-#define PMOD(IN_TYPE)                                                             \
-  FORCE_INCLINE                                                                   \
-  gdv_##IN_TYPE pmod_##IN_TYPE_##IN_TYPE(gdv_##IN_TYPE in1, gdv_##IN_TYPE in2) {  \
-    gdv_##IN_TYPE res = static_cast<gdv_##IN_TYPE>(fmod(in1, in2));               \
-    if (res < 0) {                                                                \
-      res = static_cast<gdv_##IN_TYPE>(fmod(res + in2, in2));                     \
-    }                                                                             \
-    return res;                                                                   \
+#define PMOD(IN_TYPE)                                                               \
+  FORCE_INLINE                                                                     \
+  gdv_##IN_TYPE pmod_##IN_TYPE##_##IN_TYPE(gdv_##IN_TYPE in1, bool in1_valid,       \
+      gdv_##IN_TYPE in2, bool in2_valid, bool* out_valid) {                         \
+    if (!in1_valid || !in2_valid) {                                                 \
+      *out_valid = false;                                                           \
+      return static_cast<gdv_##IN_TYPE>(0);                                         \
+    }                                                                               \
+    if (static_cast<gdv_##IN_TYPE>(0) == in2) {                                     \
+      *out_valid = false;                                                           \
+      return static_cast<gdv_##IN_TYPE>(0);                                         \
+    }                                                                               \
+    gdv_##IN_TYPE res = static_cast<gdv_##IN_TYPE>(fmod(in1, in2));                 \
+    if (res < 0) {                                                                  \
+      res = static_cast<gdv_##IN_TYPE>(fmod(res + in2, in2));                       \
+    }                                                                               \
+    *out_valid = true;                                                              \
+    return res;                                                                     \
   }
 NUMERIC_SINGLE_TYPES(PMOD)
 #undef PMOD
