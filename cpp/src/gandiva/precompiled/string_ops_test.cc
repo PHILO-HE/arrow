@@ -1110,6 +1110,18 @@ TEST(TestStringOps, TestURLDecoder) {
   out_str = url_decoder(ctx_ptr, "AaBbC%23", 8, &out_len);
   EXPECT_EQ(out_len, 6);
   EXPECT_EQ(std::string(out_str, out_len), "AaBbC#");
+
+  out_str = url_decoder(ctx_ptr, "AaBbC%24%5A", 11, &out_len);
+  EXPECT_EQ(out_len, 7);
+  EXPECT_EQ(std::string(out_str, out_len), "AaBbC$Z");
+
+  // Illegal input.
+  out_str = url_decoder(ctx_ptr, "AaBbC%5", 7, &out_len);
+  EXPECT_EQ(out_len, 7);
+  EXPECT_EQ(std::string(out_str, out_len), "AaBbC%5");
+  EXPECT_THAT(
+      ctx.get_error(),
+      ::testing::HasSubstr("url_decoder: Incomplete trailing escape (%) pattern"));
 }
 
 }  // namespace gandiva
