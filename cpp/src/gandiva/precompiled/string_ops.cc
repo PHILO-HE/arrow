@@ -1550,9 +1550,7 @@ const char* url_decoder(gdv_int64 context, const char* input, gdv_int32 input_le
       if (i < input_len && c == '%') {
         gdv_fn_context_set_error_msg(context, "url_decoder: Incomplete trailing escape (%) pattern");
         *out_len = input_len;
-        char* out_str = reinterpret_cast<char*>(gdv_fn_context_arena_malloc(context, *out_len));
-        memcpy(out_str, input, *out_len);
-        return out_str;
+        return input;
       }
     } else {
       ret[index++] = input[i];
