@@ -1053,7 +1053,7 @@ TEST(TestStringOps, TestSplitPart) {
   EXPECT_EQ(std::string(out_str, out_len), "");
   EXPECT_THAT(
       ctx.get_error(),
-      ::testing::HasSubstr("Index in split_part must be positive, value provided was 0"));
+      ::testing::HasSubstr("Index in split_part must be positive, value provided was -1"));
 
   out_str = split_part(ctx_ptr, "A,B,C", 5, ",", 1, 0, &out_len);
   EXPECT_EQ(std::string(out_str, out_len), "A");
