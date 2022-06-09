@@ -1588,23 +1588,29 @@ const char* conv(gdv_int64 context, const char* input, gdv_int32 input_len, bool
   } 
 
   from_base = from_base < 0 ? -from_base : from_base;
-  long decimal_value = strtol(input, nullptr, from_base);
+  bool is_negative_input;
+  unsigned long unsigned_decimal_value;
+  if (input[0] == '-') {
+    is_negative_input = true;
+    unsigned_decimal_value = strtoul(input + 1, nullptr, from_base);
+  } else {
+    is_negative_input = false;
+    unsigned_decimal_value = strtoul(input, nullptr, from_base);
+  }
 
   bool has_negative_mark = false;
-  if (decimal_value < 0 && to_base < 0) {
+  if (is_negative_input && to_base < 0) {
     has_negative_mark = true;
-    // Use 0 or positive number.
-    decimal_value = -decimal_value;
-  } else if (decimal_value < 0 && to_base > 0) {
+  } else if (is_negative_input && to_base > 0) {
     // Use the max value for 64-bit to convert it to positive.
-    decimal_value = strtol("FFFFFFFFFFFFFFFF", nullptr, 16) + decimal_value -1;
+    unsigned_decimal_value = strtoul("FFFFFFFFFFFFFFFF", nullptr, 16) - unsigned_decimal_value + 1;
   }
   to_base = to_base < 0 ? -to_base : to_base;
 
   char reverse_ret[64];
   int i = 0;
-  while (decimal_value > 0) {
-    int remainder = decimal_value % to_base;
+  while (unsigned_decimal_value > 0) {
+    int remainder = unsigned_decimal_value % to_base;
     char c;
     if (remainder < 10) {
       c = (char)(remainder + (int)'0');
@@ -1613,7 +1619,7 @@ const char* conv(gdv_int64 context, const char* input, gdv_int32 input_len, bool
     }
     reverse_ret[i] = c;
     i++;
-    decimal_value = decimal_value / to_base;
+    unsigned_decimal_value = unsigned_decimal_value / to_base;
   }
   if (has_negative_mark) {
     reverse_ret[i] = '-';
