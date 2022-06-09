@@ -1571,15 +1571,23 @@ const char* url_decoder(gdv_int64 context, const char* input, gdv_int32 input_le
 FORCE_INLINE
 const char* conv(gdv_int64 context, const char* input, gdv_int32 input_len, gdv_int32 from_base,
                  gdv_int32 to_base, gdv_int32* out_len) {
-  long intermediate = strtol(input, nullptr, from_base);
-  char reverse_ret[100];
+  from_base = from_base < 0 ? -from_base : from_base;
+  to_base = to_base < 0 ? -to_base : to_base;
+  long decimal_value = strtol(input, nullptr, from_base);
+  bool is_negative = false;
+  if (decimal_value < 0) {
+    is_negative = true;
+    // Use 0 or positive number.
+    decimal_value = -decimal_value;
+  }
+  char reverse_ret[64];
   int i = 0;
-  while (intermediate > 0) {
-    int remainder = intermediate % to_base;
+  while (decimal_value > 0) {
+    int remainder = decimal_value % to_base;
     char c;
     if (to_base == 16) {
       if (remainder < 10) {
-        c = (char)(remainder - (int)'0');
+        c = (char)(remainder + (int)'0');
       } else if (remainder == 10) {
         c = 'A';
       } else if (remainder == 11) {
@@ -1596,14 +1604,18 @@ const char* conv(gdv_int64 context, const char* input, gdv_int32 input_len, gdv_
     } else {
       c = (char)(remainder + (int)'0');
     }
-    reverse_ret[i] ==  c;
-    intermediate = intermediate / to_base;
+    reverse_ret[i] = c;
+    i++;
+    decimal_value = decimal_value / to_base;
+  }
+  if (is_negative) {
+    reverse_ret[i] = '-';
     i++;
   }
   *out_len = i;
   char ret[*out_len];
   for (int i = 0; i < *out_len; i++) {
-    ret[i] = reverse_ret[out_len - i - 1];
+    ret[i] = reverse_ret[*out_len - i - 1];
   }
 
   char* out_str = reinterpret_cast<char*>(gdv_fn_context_arena_malloc(context, *out_len));

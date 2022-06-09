@@ -1148,9 +1148,40 @@ TEST(TestStringOps, TestConv) {
   gdv_int32 out_len = 0;
   const char* out_str;
 
-  out_str = conv(ctx_ptr, "4", 1, 10, 2);
+  // 10-base to 2-base
+  out_str = conv(ctx_ptr, "4", 1, 10, 2, &out_len);
   EXPECT_EQ(out_len, 3);
   EXPECT_EQ(std::string(out_str, out_len), "100");
+
+  // 2-bae to 10-base
+  out_str = conv(ctx_ptr, "110", 3, 2, 10, &out_len);
+  EXPECT_EQ(out_len, 1);
+  EXPECT_EQ(std::string(out_str, out_len), "6");
+
+  // 10-base to 16-base
+  out_str = conv(ctx_ptr, "15", 2, 10, 16, &out_len);
+  EXPECT_EQ(out_len, 1);
+  EXPECT_EQ(std::string(out_str, out_len), "F");
+
+  // 36-base to 16-base
+  out_str = conv(ctx_ptr, "big", 3, 36, 16, &out_len);
+  EXPECT_EQ(out_len, 4);
+  EXPECT_EQ(std::string(out_str, out_len), "3A48");
+
+  // Space is contained in input string.
+  out_str = conv(ctx_ptr, " 15 ", 2, 10, 16, &out_len);
+  EXPECT_EQ(out_len, 1);
+  EXPECT_EQ(std::string(out_str, out_len), "F");
+
+  // Negative input.
+  out_str = conv(ctx_ptr, "-15", 3, 10, 16, &out_len);
+  EXPECT_EQ(out_len, 2);
+  EXPECT_EQ(std::string(out_str, out_len), "-F");
+
+  // Negative input and negative base.
+  out_str = conv(ctx_ptr, "-10", 3, 16, -10, &out_len);
+  EXPECT_EQ(out_len, 3);
+  EXPECT_EQ(std::string(out_str, out_len), "-16");
 }
 
 }  // namespace gandiva
