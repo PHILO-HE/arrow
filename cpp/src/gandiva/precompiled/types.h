@@ -517,4 +517,6 @@ double castFLOAT8_utf8(int64_t context, const char* data, int32_t len);
 
 const char* url_decoder(gdv_int64 context, const char* input, gdv_int32 input_len, gdv_int32* out_len);
 
+const char* conv(gdv_int64 context, const char* input, gdv_int32 input_len, gdv_int32 from_base,
+                 gdv_int32 to_base, gdv_int32* out_len);
 }  // extern "C"

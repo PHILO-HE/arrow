@@ -1142,4 +1142,15 @@ TEST(TestStringOps, TestURLDecoder) {
   EXPECT_EQ(std::string(out_str, out_len), exp_str);
 }
 
+TEST(TestStringOps, TestConv) {
+  gandiva::ExecutionContext ctx;
+  uint64_t ctx_ptr = reinterpret_cast<gdv_int64>(&ctx);
+  gdv_int32 out_len = 0;
+  const char* out_str;
+
+  out_str = conv(ctx_ptr, "4", 1, 10, 2);
+  EXPECT_EQ(out_len, 3);
+  EXPECT_EQ(std::string(out_str, out_len), "100");
+}
+
 }  // namespace gandiva

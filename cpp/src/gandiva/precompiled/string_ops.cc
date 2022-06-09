@@ -1568,4 +1568,52 @@ const char* url_decoder(gdv_int64 context, const char* input, gdv_int32 input_le
   return out_str;
 }
 
+FORCE_INLINE
+const char* conv(gdv_int64 context, const char* input, gdv_int32 input_len, gdv_int32 from_base,
+                 gdv_int32 to_base, gdv_int32* out_len) {
+  long intermediate = strtol(input, nullptr, from_base);
+  char reverse_ret[100];
+  int i = 0;
+  while (intermediate > 0) {
+    int remainder = intermediate % to_base;
+    char c;
+    if (to_base == 16) {
+      if (remainder < 10) {
+        c = (char)(remainder - (int)'0');
+      } else if (remainder == 10) {
+        c = 'A';
+      } else if (remainder == 11) {
+        c = 'B';
+      } else if (remainder == 12) {
+        c = 'C';
+      } else if (remainder == 13) {
+        c = 'D';
+      } else if (remainder == 14) {
+        c = 'E';
+      } else if (remainder == 15) {
+        c = 'F';
+      }
+    } else {
+      c = (char)(remainder + (int)'0');
+    }
+    reverse_ret[i] ==  c;
+    intermediate = intermediate / to_base;
+    i++;
+  }
+  *out_len = i;
+  char ret[*out_len];
+  for (int i = 0; i < *out_len; i++) {
+    ret[i] = reverse_ret[out_len - i - 1];
+  }
+
+  char* out_str = reinterpret_cast<char*>(gdv_fn_context_arena_malloc(context, *out_len));
+  if (ret == nullptr) {
+    gdv_fn_context_set_error_msg(context, "Could not allocate memory for output string");
+    *out_len = 0;
+    return "";
+  }
+  memcpy(out_str, ret, *out_len);
+  return out_str;
+}
+
 }  // extern "C"
