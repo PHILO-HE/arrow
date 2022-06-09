@@ -1572,12 +1572,13 @@ FORCE_INLINE
 const char* conv(gdv_int64 context, const char* input, gdv_int32 input_len, bool in1_valid,
                  gdv_int32 from_base, bool in2_valid, gdv_int32 to_base, bool in3_valid,
                  bool* out_valid, gdv_int32* out_len) {
-  if (!in1_valid || !in2_valid || !in3_valid) {
+  if (!in1_valid || !in2_valid || !in3_valid || input_len == 0) {
     *out_len = 0;
     *out_valid = false;
     return ""; 
   }
 
+  // Consistent with spark, only support base belonging to [2, 36].
   const int MIN_BASE = 2;
   const int MAX_BASE = 36;
   if (from_base < MIN_BASE || from_base > MAX_BASE ||

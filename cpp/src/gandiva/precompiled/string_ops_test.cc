@@ -1202,6 +1202,10 @@ TEST(TestStringOps, TestConv) {
   out_str = conv(ctx_ptr, "11abc", 5, true, 10, true, 16, true, &out_valid, &out_len);
   EXPECT_EQ(out_len, 1);
   EXPECT_EQ(std::string(out_str, out_len), "B");
+
+  // Should return null for Empty input.
+  out_str = conv(ctx_ptr, "", 0, true, 10, true, 16, true, &out_valid, &out_len);
+  EXPECT_EQ(out_valid, false);
 }
 
 }  // namespace gandiva
