@@ -328,7 +328,7 @@ std::vector<NativeFunction> GetStringFunctionRegistry() {
                      NativeFunction::kNeedsContext | NativeFunction::kCanReturnErrors),
 
       NativeFunction("conv", {}, DataTypeVector{utf8(), int32(), int32()}, utf8(),
-                     kResultNullIfNull, "conv",
+                     kResultNullInternal, "conv",
                      NativeFunction::kNeedsContext | NativeFunction::kCanReturnErrors)};
 
   return string_fn_registry_;

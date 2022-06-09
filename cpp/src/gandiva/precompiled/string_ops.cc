@@ -1569,46 +1569,53 @@ const char* url_decoder(gdv_int64 context, const char* input, gdv_int32 input_le
 }
 
 FORCE_INLINE
-const char* conv(gdv_int64 context, const char* input, gdv_int32 input_len, gdv_int32 from_base,
-                 gdv_int32 to_base, gdv_int32* out_len) {
+const char* conv(gdv_int64 context, const char* input, gdv_int32 input_len, bool in1_valid,
+                 gdv_int32 from_base, bool in2_valid, gdv_int32 to_base, bool in3_valid,
+                 bool* out_valid, gdv_int32* out_len) {
+  if (!in1_valid || !in2_valid || !in3_valid) {
+    *out_len = 0;
+    *out_valid = false;
+    return ""; 
+  }
+
+  const int MIN_BASE = 2;
+  const int MAX_BASE = 36;
+  if (from_base < MIN_BASE || from_base > MAX_BASE ||
+      fabs(to_base) < MIN_BASE || fabs(to_base) > MAX_BASE) {
+    *out_len = 0;
+    *out_valid = false;
+    return "";
+  } 
+
   from_base = from_base < 0 ? -from_base : from_base;
-  to_base = to_base < 0 ? -to_base : to_base;
   long decimal_value = strtol(input, nullptr, from_base);
-  bool is_negative = false;
-  if (decimal_value < 0) {
-    is_negative = true;
+
+  bool has_negative_mark = false;
+  if (decimal_value < 0 && to_base < 0) {
+    has_negative_mark = true;
     // Use 0 or positive number.
     decimal_value = -decimal_value;
+  } else if (decimal_value < 0 && to_base > 0) {
+    // Use the max value for 64-bit to convert it to positive.
+    decimal_value = strtol("FFFFFFFFFFFFFFFF", nullptr, 16) + decimal_value -1;
   }
+  to_base = to_base < 0 ? -to_base : to_base;
+
   char reverse_ret[64];
   int i = 0;
   while (decimal_value > 0) {
     int remainder = decimal_value % to_base;
     char c;
-    if (to_base == 16) {
-      if (remainder < 10) {
-        c = (char)(remainder + (int)'0');
-      } else if (remainder == 10) {
-        c = 'A';
-      } else if (remainder == 11) {
-        c = 'B';
-      } else if (remainder == 12) {
-        c = 'C';
-      } else if (remainder == 13) {
-        c = 'D';
-      } else if (remainder == 14) {
-        c = 'E';
-      } else if (remainder == 15) {
-        c = 'F';
-      }
-    } else {
+    if (remainder < 10) {
       c = (char)(remainder + (int)'0');
+    } else { 
+      c = (char)(remainder - 10 + (int)'A');
     }
     reverse_ret[i] = c;
     i++;
     decimal_value = decimal_value / to_base;
   }
-  if (is_negative) {
+  if (has_negative_mark) {
     reverse_ret[i] = '-';
     i++;
   }
@@ -1622,9 +1629,11 @@ const char* conv(gdv_int64 context, const char* input, gdv_int32 input_len, gdv_
   if (ret == nullptr) {
     gdv_fn_context_set_error_msg(context, "Could not allocate memory for output string");
     *out_len = 0;
+    *out_valid = false;
     return "";
   }
   memcpy(out_str, ret, *out_len);
+  *out_valid = true;
   return out_str;
 }
 
