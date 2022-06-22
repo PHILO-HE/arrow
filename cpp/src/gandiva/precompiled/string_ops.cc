@@ -1851,7 +1851,7 @@ const char* conv(gdv_int64 context, const char* input, gdv_int32 input_len, bool
   }
 
   char* out_str = reinterpret_cast<char*>(gdv_fn_context_arena_malloc(context, *out_len));
-  if (ret == nullptr) {
+  if (out_str == nullptr) {
     gdv_fn_context_set_error_msg(context, "Could not allocate memory for output string");
     *out_len = 0;
     *out_valid = false;
