@@ -1401,6 +1401,12 @@ TEST(TestStringOps, TestConv) {
   // Should return null for Empty input.
   out_str = conv(ctx_ptr, "", 0, true, 10, true, 16, true, &out_valid, &out_len);
   EXPECT_EQ(out_valid, false);
+
+  // "0" as input.
+  out_str = conv(ctx_ptr, "0", 1, true, 10, true, 16, true, &out_valid, &out_len);
+  EXPECT_EQ(out_valid, true);
+  EXPECT_EQ(out_len, 1);
+  EXPECT_EQ(std::string(out_str, out_len), "0");
 }
 
 TEST(TestStringOps, TestConvPerf) {

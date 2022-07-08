@@ -1800,15 +1800,21 @@ const char* conv(gdv_int64 context, const char* input, gdv_int32 input_len, bool
     return ""; 
   }
 
+  if (*input == '0' && input_len == 1) {
+    *out_len = 1;
+    *out_valid = true;
+    return "0";
+  }
+
   // Consistent with spark, only support base belonging to [2, 36].
   const int MIN_BASE = 2;
   const int MAX_BASE = 36;
   if (from_base < MIN_BASE || from_base > MAX_BASE ||
-      fabs(to_base) < MIN_BASE || fabs(to_base) > MAX_BASE) {
+      std::abs(to_base) < MIN_BASE || std::abs(to_base) > MAX_BASE) {
     *out_len = 0;
     *out_valid = false;
     return "";
-  } 
+  }
 
   from_base = from_base < 0 ? -from_base : from_base;
   bool is_negative_input;
