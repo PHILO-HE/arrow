@@ -1373,7 +1373,7 @@ TEST(TestStringOps, TestConv) {
   EXPECT_EQ(std::string(out_str, out_len), expected_str);
 
   // Space is contained in input string.
-  out_str = conv(ctx_ptr, " 15 ", 2, true, 10, true, 16, true, &out_valid, &out_len);
+  out_str = conv(ctx_ptr, " 15 ", 4, true, 10, true, 16, true, &out_valid, &out_len);
   EXPECT_EQ(out_len, 1);
   EXPECT_EQ(std::string(out_str, out_len), "F");
 
@@ -1435,7 +1435,7 @@ TEST(TestStringOps, TestConvPerf) {
   
   using namespace std::chrono;
   high_resolution_clock::time_point t1 = high_resolution_clock::now();
-  for (int i = 0; i < 90000; i++) {
+  for (int i = 0; i < 900000; i++) {
     out_str = conv(ctx_ptr, test_cases[i % 9].input.c_str(),
      test_cases[i % 9].input.length(), true, test_cases[i % 9].from_base,
       true, test_cases[i % 9].to_base, true, &out_valid, &out_len);

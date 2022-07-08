@@ -1818,14 +1818,20 @@ const char* conv(gdv_int64 context, const char* input, gdv_int32 input_len, bool
 
   from_base = from_base < 0 ? -from_base : from_base;
   bool is_negative_input;
+  char* input_chars = (char*)malloc(input_len + 1);
+  memcpy(input_chars, input, input_len);
+  input_chars[input_len] = '\0';
   unsigned long unsigned_decimal_value;
   if (input[0] == '-') {
     is_negative_input = true;
-    unsigned_decimal_value = strtoul(input + 1, nullptr, from_base);
+    // We cannot directly pass `input` to strtoul, because `input` can point to
+    // consecutively cached data.
+    unsigned_decimal_value = strtoul(input_chars + 1, nullptr, from_base);
   } else {
     is_negative_input = false;
-    unsigned_decimal_value = strtoul(input, nullptr, from_base);
+    unsigned_decimal_value = strtoul(input_chars, nullptr, from_base);
   }
+  free(input_chars);
 
   bool has_negative_mark = false;
   const unsigned long MAX_UNSIGNED_INT64 = 0xFFFFFFFFFFFFFFFF;
