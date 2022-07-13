@@ -95,7 +95,7 @@ gdv_boolean isNaN_float32(gdv_float32 val) { return isnan(val) || isinf(val); }
 FORCE_INLINE
 gdv_boolean isNaN_float64(gdv_float64 val) { return isnan(val) || isinf(val); }
 
-MOD_OP(mod, int64, int32, int32)
+MOD_OP(mod, int32, int32, int32)
 MOD_OP(mod, int64, int64, int64)
 
 #undef MOD_OP
