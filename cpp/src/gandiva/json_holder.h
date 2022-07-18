@@ -26,6 +26,7 @@
 #include "gandiva/execution_context.h"
 #include "gandiva/function_holder.h"
 #include "gandiva/node.h"
+#include "gandiva/simdjson.h"
 #include "gandiva/visibility.h"
 
 namespace gandiva {
@@ -42,8 +43,9 @@ class GANDIVA_EXPORT JsonHolder : public FunctionHolder {
   //TODO(): should try to return const uint8_t *
   const uint8_t* operator()(ExecutionContext* ctx, const std::string& json_str, const std::string& json_path, int32_t* out_len);
   
-  arrow::json::ParseOptions parse_options_ = arrow::json::ParseOptions::Defaults();
-  arrow::json::ReadOptions read_options_ = arrow::json::ReadOptions::Defaults();
+  // arrow::json::ParseOptions parse_options_ = arrow::json::ParseOptions::Defaults();
+  // arrow::json::ReadOptions read_options_ = arrow::json::ReadOptions::Defaults();
+  onedemand::parser parser;
 };
 
 }  // namespace gandiva
