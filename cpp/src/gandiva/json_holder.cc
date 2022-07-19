@@ -22,7 +22,11 @@
 #include "gandiva/node.h"
 #include "gandiva/regex_util.h"
 
+using namespace simdjson;
+
 namespace gandiva {
+
+//using namespace simdjson;
 
 Status JsonHolder::Make(const FunctionNode& node, std::shared_ptr<JsonHolder>* holder) {
   return Make(holder);
@@ -71,12 +75,24 @@ Status JsonHolder::Make(std::shared_ptr<JsonHolder>* holder) {
 
 const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std::string& json_str,
  const std::string& json_path, int32_t* out_len) {
-  onedemand::document doc = parser.iterator(json_str);
+  padded_string padded_input(json_str);
+  ondemand::document doc = parser_->iterate(padded_input);
   if (json_path.length() < 3) {
     return nullptr;
   }
   auto field_name = json_path.substr(2);
-  auto res = std::string_view(doc.find_field(field_name));
+  //auto raw_res = doc.find_field(field_name);
+  //std::cout << raw_res.type() << std::endl;
+  auto raw_res = doc.find_field(field_name);
+  //auto res = std::string_view(raw_res);
+  std::string_view res;
+  auto error = raw_res.get_string().get(res);
+  //std::cout << error << std::endl;
+  if (error) {
+   return nullptr;
+  }
+  //std::string_view xyz;
+  //auto res = doc.find_field(field_name).raw_json_token().get(&xyz);
   *out_len = res.length();
   uint8_t* result_buffer = reinterpret_cast<uint8_t*>(ctx->arena()->Allocate(*out_len));
   memcpy(result_buffer, res.data(), *out_len);

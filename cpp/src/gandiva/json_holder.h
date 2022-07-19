@@ -29,12 +29,18 @@
 #include "gandiva/simdjson.h"
 #include "gandiva/visibility.h"
 
+using namespace simdjson;
+
 namespace gandiva {
+
+//using namespace simdjson;
 
 /// Function Holder for SQL 'get_json_object'
 class GANDIVA_EXPORT JsonHolder : public FunctionHolder {
  public:
-  JsonHolder() {}
+  JsonHolder() {
+   parser_ = std::make_shared<ondemand::parser>();
+  }
   ~JsonHolder() override = default;
 
   static Status Make(const FunctionNode& node, std::shared_ptr<JsonHolder>* holder);
@@ -45,7 +51,7 @@ class GANDIVA_EXPORT JsonHolder : public FunctionHolder {
   
   // arrow::json::ParseOptions parse_options_ = arrow::json::ParseOptions::Defaults();
   // arrow::json::ReadOptions read_options_ = arrow::json::ReadOptions::Defaults();
-  onedemand::parser parser;
+  std::shared_ptr<ondemand::parser> parser_;
 };
 
 }  // namespace gandiva
