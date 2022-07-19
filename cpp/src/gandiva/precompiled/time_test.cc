@@ -132,6 +132,16 @@ TEST(TestTime, TestCastTimestamp) {
   context.Reset();
 }
 
+TEST(TestTime, TestCastTimestampWithCarrying) {
+  ExecutionContext context;
+  int64_t context_ptr = reinterpret_cast<int64_t>(&context);
+  bool out_valid;
+  castTIMESTAMP_withCarrying_withoutSep_utf8(context_ptr, "-", 1, true, &out_valid);
+  EXPECT_EQ(out_valid, false);
+  castTIMESTAMP_withCarrying_utf8(context_ptr, "-", 1, true, &out_valid);
+  EXPECT_EQ(out_valid, false);
+}
+
 #ifndef _WIN32
 
 // TODO(wesm): ARROW-4495. Need to address TZ database issues on Windows
