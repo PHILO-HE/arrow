@@ -22,7 +22,6 @@
 #include "gandiva/node.h"
 #include "gandiva/regex_util.h"
 #include <sstream>
-#include <iostream>
 
 using namespace simdjson;
 
@@ -37,6 +36,46 @@ Status JsonHolder::Make(std::shared_ptr<JsonHolder>* holder) {
   return Status::OK();
 }
 
+error_code handle_types(simdjson_result<ondemand::value> raw_res, std::vector<std::string> fields,
+ std::string_view* res) {
+ switch (raw_res.type()) {
+   case ondemand::json_type::number: {
+      std::stringstream ss;
+      double num_res;
+      auto error = raw_res.get_double().get(num_res);
+      if (!error) {
+        ss << num_res;
+        *res = ss.str();
+      }
+      return error;
+    }
+   case ondemand::json_type::string: {
+     //std::string_view res;
+     auto error = raw_res.get_string().get(*res);
+     return error;
+    }
+   case ondemand::json_type::boolean: {
+     // Not supported.
+     // return nullptr;
+    }
+   case ondemand::json_type::object: {
+     // Not supported.
+     auto obj = raw_res.get_object();
+     assert(fields.size() > 0);
+     auto inner_result = obj[fields[0]];
+     fields.erase(fields.begin());
+     return handle_types(inner_result, fields, res);
+    }
+   case ondemand::json_type::array: {
+     // Not supported.
+     //  return nullptr;
+    }
+   case ondemand::json_type::null: {
+    //  return nullptr;
+    }
+  }
+}
+
 const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std::string& json_str,
  const std::string& json_path, int32_t* out_len) {
   padded_string padded_input(json_str);
@@ -49,43 +88,31 @@ const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std:
   if (json_path.length() < 3) {
     return nullptr;
   }
-  auto field_name = json_path.substr(2);
-  auto raw_res = doc.find_field(field_name);
-  // std::cout << raw_res.type() << std::endl;
+
+  // The format is fixed, i.e., ".$a.b""
+  auto raw_field_name = json_path.substr(2);
+  std::vector<std::string> fields;
+  while (raw_field_name.find(".") != std::string::npos) {
+    auto ind = raw_field_name.find(".");
+    fields.push_back(raw_field_name.substr(0, ind));
+    raw_field_name = raw_field_name.substr(ind + 1);
+  }
+  fields.push_back(raw_field_name);
+
+  // Illegal case.
+  if (fields.size() < 1) {
+    return nullptr;
+  }
+
+  auto raw_res = doc.find_field(fields[0]);
   error_code error;
   std::string_view res;
-  switch (raw_res.type()) {
-   case ondemand::json_type::number: {
-      std::stringstream ss;
-      double num_res;
-      error = raw_res.get_double().get(num_res);
-      if (!error) {
-        ss << num_res;
-        res = ss.str();
-      }
-      break;
-    }
-   case ondemand::json_type::string:
-     //std::string_view res;
-     error = raw_res.get_string().get(res);
-     break;
-   case ondemand::json_type::boolean:
-     // Not supported.
-     return nullptr;
-   case ondemand::json_type::object: {
-     // Not supported.
-     auto obj = raw_res.get_object();
-     std::cout << "object: " << std::endl;
-     std::cout << obj["hello"] << std::endl;
-     return nullptr;
-    }
-   case ondemand::json_type::array:
-     // Not supported.
-     return nullptr;
-   case ondemand::json_type::null:
-     return nullptr;
+  fields.erase(fields.begin());
+  try {
+    error = handle_types(raw_res, fields, &res);
+  } catch(...) {
+    return nullptr;
   }
-  std::cout << "error: " << error << std::endl;
   if (error) {
    return nullptr;
   }

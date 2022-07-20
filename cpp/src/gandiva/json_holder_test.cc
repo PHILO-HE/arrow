@@ -48,11 +48,10 @@ TEST_F(TestJsonHolder, TestJson) {
   data = get_json_object(&execution_context_, R"({"hello": 3.5})", "$.hello", &out_len);
   EXPECT_EQ(out_len, 3);
   EXPECT_EQ(std::string((char*)data, out_len), "3.5");
-/**
-  const uint8_t* data = get_json_object(&execution_context_, R"({"my": {"hello": 3.5}})", "$.my", &out_len);
-  //EXPECT_EQ(std::string((char*)data, out_len), "my");
-**/  
-/**  
+
+  data = get_json_object(&execution_context_, R"({"my": {"hello": 3.5}})", "$.my.hello", &out_len);
+  EXPECT_EQ(std::string((char*)data, out_len), "3.5");
+
   // no data contained for given field.
   data = get_json_object(&execution_context_, R"({"hello": 3.5})", "$.hi", &out_len);
   EXPECT_EQ(data, nullptr);
@@ -81,7 +80,6 @@ TEST_F(TestJsonHolder, TestJson) {
   data = get_json_object(&execution_context_, R"({"name": "fang", "age": "5", "id": "001"})", "$.id", &out_len);
   EXPECT_EQ(out_len, 3);
   EXPECT_EQ(std::string((char*)data, out_len), "001");
-**/
 }
 
 }  // namespace gandiva
