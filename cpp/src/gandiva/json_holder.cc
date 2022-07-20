@@ -21,6 +21,7 @@
 
 #include "gandiva/node.h"
 #include "gandiva/regex_util.h"
+// #include <iostream>
 
 using namespace simdjson;
 
@@ -76,17 +77,48 @@ Status JsonHolder::Make(std::shared_ptr<JsonHolder>* holder) {
 const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std::string& json_str,
  const std::string& json_path, int32_t* out_len) {
   padded_string padded_input(json_str);
-  ondemand::document doc = parser_->iterate(padded_input);
+  ondemand::document doc;
+  try {
+    doc = parser_->iterate(padded_input);
+  } catch (simdjson_error& e) {
+    return nullptr;
+  }
   if (json_path.length() < 3) {
     return nullptr;
   }
   auto field_name = json_path.substr(2);
-  //auto raw_res = doc.find_field(field_name);
-  //std::cout << raw_res.type() << std::endl;
   auto raw_res = doc.find_field(field_name);
-  //auto res = std::string_view(raw_res);
+  // std::cout << raw_res.type() << std::endl;
+  error_code error;
   std::string_view res;
-  auto error = raw_res.get_string().get(res);
+  switch (raw_res.type()) {
+   case ondemand::json_type::number:
+     double num_res;
+     error = raw_res.get_double().get(num_res);
+    //  std::cout << "num_res: " << num_res << std::endl;
+     if (!error) {
+       res = std::string_view(std::to_string(num_res));
+       //ondemand::object o;
+       //res = std::string_view(to_string(raw_res.get_object().get(o)));
+     }
+     break;
+   case ondemand::json_type::string:
+     //std::string_view res;
+     error = raw_res.get_string().get(res);
+     break;
+   case ondemand::json_type::object:
+     // Not supported.
+     return nullptr;
+   case ondemand::json_type::array:
+     // Not supported.
+     return nullptr;
+   case ondemand::json_type::null:
+     return nullptr;
+  }
+  //auto raw_res = doc.find_field(field_name);
+  //auto res = std::string_view(raw_res);
+  //std::string_view res;
+  //auto error = raw_res.get_string().get(res);
   //std::cout << error << std::endl;
   if (error) {
    return nullptr;
