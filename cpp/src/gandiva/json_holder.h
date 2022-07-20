@@ -49,8 +49,6 @@ class GANDIVA_EXPORT JsonHolder : public FunctionHolder {
   //TODO(): should try to return const uint8_t *
   const uint8_t* operator()(ExecutionContext* ctx, const std::string& json_str, const std::string& json_path, int32_t* out_len);
   
-  // arrow::json::ParseOptions parse_options_ = arrow::json::ParseOptions::Defaults();
-  // arrow::json::ReadOptions read_options_ = arrow::json::ReadOptions::Defaults();
   std::shared_ptr<ondemand::parser> parser_;
 };
 
