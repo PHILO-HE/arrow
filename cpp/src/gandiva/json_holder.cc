@@ -21,7 +21,8 @@
 
 #include "gandiva/node.h"
 #include "gandiva/regex_util.h"
-// #include <iostream>
+#include <sstream>
+#include <iostream>
 
 using namespace simdjson;
 
@@ -92,23 +93,33 @@ const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std:
   error_code error;
   std::string_view res;
   switch (raw_res.type()) {
-   case ondemand::json_type::number:
-     double num_res;
-     error = raw_res.get_double().get(num_res);
-    //  std::cout << "num_res: " << num_res << std::endl;
-     if (!error) {
-       res = std::string_view(std::to_string(num_res));
-       //ondemand::object o;
-       //res = std::string_view(to_string(raw_res.get_object().get(o)));
-     }
-     break;
+   case ondemand::json_type::number: {
+      std::stringstream ss;
+      double num_res;
+      error = raw_res.get_double().get(num_res);
+      //  std::cout << "num_res: " << num_res << std::endl;
+      if (!error) {
+        ss << num_res;
+        res = ss.str();
+        //ondemand::object o;
+        //res = std::string_view(to_string(raw_res.get_object().get(o)));
+      }
+      break;
+    }
    case ondemand::json_type::string:
      //std::string_view res;
      error = raw_res.get_string().get(res);
      break;
-   case ondemand::json_type::object:
+   case ondemand::json_type::boolean:
      // Not supported.
      return nullptr;
+   case ondemand::json_type::object: {
+     // Not supported.
+     auto obj = raw_res.get_object();
+     std::cout << "object: " << std::endl;
+     std::cout << obj["hello"] << std::endl;
+     return nullptr;
+    }
    case ondemand::json_type::array:
      // Not supported.
      return nullptr;
@@ -119,7 +130,7 @@ const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std:
   //auto res = std::string_view(raw_res);
   //std::string_view res;
   //auto error = raw_res.get_string().get(res);
-  //std::cout << error << std::endl;
+  std::cout << "error: " << error << std::endl;
   if (error) {
    return nullptr;
   }
