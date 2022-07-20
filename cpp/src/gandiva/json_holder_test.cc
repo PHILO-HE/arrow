@@ -52,6 +52,10 @@ TEST_F(TestJsonHolder, TestJson) {
   data = get_json_object(&execution_context_, R"({"my": {"hello": 3.5}})", "$.my.hello", &out_len);
   EXPECT_EQ(std::string((char*)data, out_len), "3.5");
 
+  // bool case.
+  data = get_json_object(&execution_context_, R"({"my": {"hello": true}})", "$.my.hello", &out_len);
+  EXPECT_EQ(std::string((char*)data, out_len), "true");
+
   // no data contained for given field.
   data = get_json_object(&execution_context_, R"({"hello": 3.5})", "$.hi", &out_len);
   EXPECT_EQ(data, nullptr);

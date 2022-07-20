@@ -55,8 +55,14 @@ error_code handle_types(simdjson_result<ondemand::value> raw_res, std::vector<st
      return error;
     }
    case ondemand::json_type::boolean: {
-     // Not supported.
-     // return nullptr;
+     bool bool_res;
+     raw_res.get_bool().get(bool_res);
+     if (bool_res) {
+       *res = "true";
+     } else {
+       *res = "false";
+     }
+     return error_code::SUCCESS;
     }
    case ondemand::json_type::object: {
      // Not supported.
@@ -68,10 +74,10 @@ error_code handle_types(simdjson_result<ondemand::value> raw_res, std::vector<st
     }
    case ondemand::json_type::array: {
      // Not supported.
-     //  return nullptr;
+     return error_code::UNSUPPORTED_ARCHITECTURE;
     }
    case ondemand::json_type::null: {
-    //  return nullptr;
+     return error_code::UNSUPPORTED_ARCHITECTURE;
     }
   }
 }
