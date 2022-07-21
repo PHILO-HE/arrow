@@ -33,8 +33,6 @@ using namespace simdjson;
 
 namespace gandiva {
 
-//using namespace simdjson;
-
 /// Function Holder for SQL 'get_json_object'
 class GANDIVA_EXPORT JsonHolder : public FunctionHolder {
  public:

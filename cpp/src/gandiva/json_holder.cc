@@ -50,7 +50,6 @@ error_code handle_types(simdjson_result<ondemand::value> raw_res, std::vector<st
       return error;
     }
    case ondemand::json_type::string: {
-     //std::string_view res;
      auto error = raw_res.get_string().get(*res);
      return error;
     }
@@ -65,7 +64,7 @@ error_code handle_types(simdjson_result<ondemand::value> raw_res, std::vector<st
      return error_code::SUCCESS;
     }
    case ondemand::json_type::object: {
-     // Not supported.
+     // For nested case, e.g., for "{"my": {"hello": 10}}", ".$my" will return an object type.
      auto obj = raw_res.get_object();
      assert(fields.size() > 0);
      auto inner_result = obj[fields[0]];
@@ -95,7 +94,7 @@ const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std:
     return nullptr;
   }
 
-  // The format is fixed, i.e., ".$a.b""
+  // Follow spark's format for specifying a field, e.g., ".$a.b".
   auto raw_field_name = json_path.substr(2);
   std::vector<std::string> fields;
   while (raw_field_name.find(".") != std::string::npos) {
@@ -126,6 +125,6 @@ const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std:
   uint8_t* result_buffer = reinterpret_cast<uint8_t*>(ctx->arena()->Allocate(*out_len));
   memcpy(result_buffer, res.data(), *out_len);
   return result_buffer;
- }
+}
 
 }  // namespace gandiva
