@@ -1911,7 +1911,7 @@ const char* conv_int64_to_binary(gdv_int64 context, gdv_int64 input, bool in_val
   }
   int i = 63;
   while (unsigned_input > 0) {
-    int remainder = unsigned_input % 2;
+    int remainder = unsigned_input & 1;
     if (remainder == 0) {
       out_str[i] = '0';
     } else {
