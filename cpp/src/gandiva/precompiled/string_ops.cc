@@ -1889,8 +1889,11 @@ const char* conv_int64_to_binary(gdv_int64 context, gdv_int64 input, bool in_val
   }
 
   const unsigned long MAX_UNSIGNED_INT64 = 0xFFFFFFFFFFFFFFFF;
+  unsigned long unsigned_input;
   if (input < 0) {
-    input = MAX_UNSIGNED_INT64 + input + 1;
+    unsigned_input = MAX_UNSIGNED_INT64 + input + 1;
+  } else {
+    unsigned_input = input;
   }
 
   char* out_str = reinterpret_cast<char*>(gdv_fn_context_arena_malloc(context, 64));
@@ -1901,15 +1904,15 @@ const char* conv_int64_to_binary(gdv_int64 context, gdv_int64 input, bool in_val
     return "";
   }
   int i = 63;
-  while (input > 0) {
-    int remainder = input % 2;
+  while (unsigned_input > 0) {
+    int remainder = unsigned_input % 2;
     if (remainder == 0) {
       out_str[i] = '0';
     } else {
       out_str[i] = '1';
     }
     i--;
-    remainder = remainder >> 1;
+    unsigned_input = unsigned_input >> 1;
   }
   *out_len = 64 - i - 1;
   if (*out_len == 0) {
