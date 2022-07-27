@@ -1888,6 +1888,12 @@ const char* conv_int64_to_binary(gdv_int64 context, gdv_int64 input, bool in_val
     return "";
   }
 
+  if (input == 0) {
+    *out_valid = true;
+    *out_len = 1;
+    return "0";
+  }
+
   const unsigned long MAX_UNSIGNED_INT64 = 0xFFFFFFFFFFFFFFFF;
   unsigned long unsigned_input;
   if (input < 0) {

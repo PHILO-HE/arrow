@@ -1454,6 +1454,11 @@ TEST(TestStringOps, TestConvToBinary) {
   const char* out_str;
   bool out_valid;
 
+  out_str = conv_int64_to_binary(ctx_ptr, 0, true, &out_valid, &out_len);
+  EXPECT_EQ(out_len, 1);
+  EXPECT_EQ(out_valid, true);
+  EXPECT_EQ(std::string(out_str, out_len), "0");
+
   out_str = conv_int64_to_binary(ctx_ptr, 4, true, &out_valid, &out_len);
   EXPECT_EQ(out_len, 3);
   EXPECT_EQ(out_valid, true);
