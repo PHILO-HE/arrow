@@ -1447,7 +1447,7 @@ TEST(TestStringOps, TestConvPerf) {
   std::cout <<"*******" << std::endl;
 }
 
-TEST(TestStringOps, TestConv) {
+TEST(TestStringOps, TestConvToBinary) {
   gandiva::ExecutionContext ctx;
   uint64_t ctx_ptr = reinterpret_cast<gdv_int64>(&ctx);
   gdv_int32 out_len = 0;
@@ -1467,7 +1467,8 @@ TEST(TestStringOps, TestConv) {
   out_str = conv_int64_to_binary(ctx_ptr, -13, true, &out_valid, &out_len);
   EXPECT_EQ(out_len, 64);
   EXPECT_EQ(out_valid, true);
-  EXPECT_EQ(std::string(out_str, out_len), "1111111111111111111111111111111111111111111111111111111111110011");
+  EXPECT_EQ(std::string(out_str, out_len),
+   "1111111111111111111111111111111111111111111111111111111111110011");
 }
 
 TEST(TestStringOps, TestToHex) {
