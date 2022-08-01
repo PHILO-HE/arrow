@@ -38,6 +38,9 @@ namespace gandiva {
 #define HASH_SHA256_NULL_NEVER_FN(name, ALIASES) \
   NUMERIC_BOOL_DATE_VAR_LEN_TYPES(HASH_SHA256_NULL_NEVER, name, ALIASES)
 
+#define HASH_MD5_NULL_NEVER_FN(name, ALIASES) \
+  NUMERIC_BOOL_DATE_VAR_LEN_TYPES(HASH_MD5_NULL_NEVER, name, ALIASES)
+
 std::vector<NativeFunction> GetHashFunctionRegistry() {
   static std::vector<NativeFunction> hash_fn_registry_ = {
       NativeFunction("hash32_spark", {}, DataTypeVector{boolean(), int32()}, int32(),
@@ -74,7 +77,9 @@ std::vector<NativeFunction> GetHashFunctionRegistry() {
 
       HASH_SHA1_NULL_NEVER_FN(hashSHA1, {}),
 
-      HASH_SHA256_NULL_NEVER_FN(hashSHA256, {})};
+      HASH_SHA256_NULL_NEVER_FN(hashSHA256, {}),
+
+      HASH_MD5_NULL_NEVER_FN(hashMD5, {})};
 
   return hash_fn_registry_;
 }
