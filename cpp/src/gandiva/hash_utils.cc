@@ -22,6 +22,34 @@
 #include "openssl/evp.h"
 
 namespace gandiva {
+
+/// Hashes a generic message using the SHA2 algorithm with bits length specified.
+GANDIVA_EXPORT
+const char* gdv_sha2_hash(int64_t context, const void* message, size_t message_length, int bits_length
+                            int32_t* out_length) {
+  constexpr int sha2_result_length;
+  EVP_MD* hash_type;
+
+  if (bits_length == 224) {
+    sha2_result_length = 56;
+    hash_type = EVP_sha224();
+  }
+  if (bits_length == 256) {
+    sha2_result_length = 64;
+    hash_type = EVP_sha256();
+  } else if (bits_length == 384) {
+    sha2_result_length = 96;
+    hash_type = EVP_sha384();
+  } else if (bits_length == 512) {
+    sha2_result_length = 128;
+    hash_type = EVP_sha512();
+  } else {
+    gdv_fn_context_set_error_msg(context, "Unrecognized bits length for sha2!")
+  }
+  return gdv_hash_using_openssl(context, message, message_length, hash_type,
+                                sha2_result_length, out_length);
+}
+
 /// Hashes a generic message using the SHA256 algorithm
 GANDIVA_EXPORT
 const char* gdv_sha256_hash(int64_t context, const void* message, size_t message_length,
