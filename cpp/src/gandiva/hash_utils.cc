@@ -25,29 +25,34 @@ namespace gandiva {
 
 /// Hashes a generic message using the SHA2 algorithm with bits length specified.
 GANDIVA_EXPORT
-const char* gdv_sha2_hash(int64_t context, const void* message, size_t message_length, int bits_length
-                            int32_t* out_length) {
-  constexpr int sha2_result_length;
-  EVP_MD* hash_type;
+const char* gdv_sha2_hash(int64_t context, const void* message, size_t message_length, int bits_length,
+                          int32_t* out_length) {
+  uint32_t sha2_result_length;
 
   if (bits_length == 224) {
     sha2_result_length = 56;
-    hash_type = EVP_sha224();
-  }
-  if (bits_length == 256) {
+    const EVP_MD* hash_type = EVP_sha224();
+    return gdv_hash_using_openssl(context, message, message_length, hash_type,
+                                  sha2_result_length, out_length);
+  } else if (bits_length == 256) {
     sha2_result_length = 64;
-    hash_type = EVP_sha256();
+    const EVP_MD* hash_type = EVP_sha256();
+    return gdv_hash_using_openssl(context, message, message_length, hash_type,
+                                  sha2_result_length, out_length);
   } else if (bits_length == 384) {
     sha2_result_length = 96;
-    hash_type = EVP_sha384();
+    const EVP_MD* hash_type = EVP_sha384();
+    return gdv_hash_using_openssl(context, message, message_length, hash_type,
+                                  sha2_result_length, out_length);
   } else if (bits_length == 512) {
     sha2_result_length = 128;
-    hash_type = EVP_sha512();
+    const EVP_MD* hash_type = EVP_sha512();
+    return gdv_hash_using_openssl(context, message, message_length, hash_type,
+                                  sha2_result_length, out_length);
   } else {
-    gdv_fn_context_set_error_msg(context, "Unrecognized bits length for sha2!")
+    gdv_fn_context_set_error_msg(context, "Unrecognized bits length for sha2!");
+    return "";
   }
-  return gdv_hash_using_openssl(context, message, message_length, hash_type,
-                                sha2_result_length, out_length);
 }
 
 /// Hashes a generic message using the SHA256 algorithm

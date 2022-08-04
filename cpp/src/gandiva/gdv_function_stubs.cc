@@ -287,18 +287,36 @@ int32_t gdv_fn_populate_varlen_vector(int64_t context_ptr, int8_t* data_ptr,
   const char* gdv_fn_sha2_##TYPE(int64_t context, gdv_##TYPE value, bool validity,    \
                                  int32_t bits_length, bool bits_len_validity,         \
                                  int32_t* out_length) {                               \
-    if (!validity) {                                                                  \
-      return gandiva::gdv_sha2_hash(context, NULLPTR, 0, bits_length, out_length);    \
-    }                                                                                 \
     if (!bits_len_validity) {                                                         \
       gdv_fn_context_set_error_msg(context, "The bits length should be specified!");  \
       return "";                                                                      \
+    }                                                                                 \
+    if (!validity) {                                                                  \
+      return gandiva::gdv_sha2_hash(context, NULLPTR, 0, bits_length, out_length);    \
     }                                                                                 \
     auto value_as_long = gandiva::gdv_double_to_long((double)value);                  \
     const char* result = gandiva::gdv_sha2_hash(context, &value_as_long,              \
                                                 sizeof(value_as_long),                \
                                                 bits_length, out_length);             \
     return result;                                                                    \
+  }
+
+// For string/binary type.
+#define SHA2_HASH_FUNCTION_BUF(TYPE)                                                      \
+  GANDIVA_EXPORT                                                                          \
+  const char* gdv_fn_sha2_##TYPE(int64_t context, gdv_##TYPE value,                       \
+                                 int32_t value_length, bool value_validity,               \
+                                 int32_t bits_length, bool bits_len_validity,             \
+                                 int32_t* out_length) {                                   \
+    if (!bits_len_validity) {                                                             \
+      gdv_fn_context_set_error_msg(context, "The bits length should be specified!");      \
+      return "";                                                                          \
+    }                                                                                     \
+    if (!value_validity) {                                                                \
+      return gandiva::gdv_sha2_hash(context, NULLPTR, 0, bits_length, out_length);        \
+    }                                                                                     \
+                                                                                          \
+    return gandiva::gdv_sha2_hash(context, value, value_length, bits_length, out_length); \
   }
 
 #define SHA256_HASH_FUNCTION(TYPE)                                                    \
@@ -354,6 +372,8 @@ SHA_NUMERIC_BOOL_DATE_PARAMS(MD5_HASH_FUNCTION)
 SHA_VAR_LEN_PARAMS(MD5_HASH_FUNCTION_BUF)
 
 SHA_NUMERIC_BOOL_DATE_PARAMS(SHA2_HASH_FUNCTION)
+// For string/binary type.
+SHA_VAR_LEN_PARAMS(SHA2_HASH_FUNCTION_BUF)
 SHA_NUMERIC_BOOL_DATE_PARAMS(SHA256_HASH_FUNCTION)
 SHA_VAR_LEN_PARAMS(SHA256_HASH_FUNCTION_BUF)
 
