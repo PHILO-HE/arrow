@@ -51,6 +51,7 @@ const char* gdv_sha2_hash(int64_t context, const void* message, size_t message_l
                                   sha2_result_length, out_length);
   } else {
     gdv_fn_context_set_error_msg(context, "Unrecognized bits length for sha2!");
+    *out_length = 0;
     return "";
   }
 }
