@@ -92,9 +92,10 @@ error_code handle_types(simdjson_result<ondemand::value> raw_res, std::vector<st
 const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std::string& json_str,
  const std::string& json_path, int32_t* out_len) {
   padded_string padded_input(json_str);
+  ondemand::parser parser;
   ondemand::document doc;
   try {
-    doc = parser_->iterate(padded_input);
+    doc = parser.iterate(padded_input);
   } catch (simdjson_error& e) {
     return nullptr;
   }
