@@ -22,6 +22,7 @@
 #include "gandiva/node.h"
 #include "gandiva/regex_util.h"
 #include <sstream>
+#include <algorithm>
 
 using namespace simdjson;
 
@@ -36,8 +37,7 @@ Status JsonHolder::Make(std::shared_ptr<JsonHolder>* holder) {
   return Status::OK();
 }
 
-error_code handle_types(simdjson_result<ondemand::value> raw_res, std::vector<std::string> fields,
- std::string* res) {
+error_code handle_types(simdjson_result<ondemand::value> raw_res, std::string* res) {
  switch (raw_res.type()) {
    case ondemand::json_type::number: {
       std::stringstream ss;
@@ -69,16 +69,11 @@ error_code handle_types(simdjson_result<ondemand::value> raw_res, std::vector<st
      // For nested case, e.g., for "{"my": {"hello": 10}}", ".$my" will return an object type.
      auto obj = raw_res.get_object();
      // For the case that result is a json object.
-     if (fields.empty()) {
-       std::stringstream ss;
-       ss << obj;
-       *res = ss.str();
-       return error_code::SUCCESS;
-     }
-     auto inner_result = obj[fields[0]];
-     fields.erase(fields.begin());
-     return handle_types(inner_result, fields, res);
-    }
+     std::stringstream ss;
+     ss << obj;
+     *res = ss.str();
+     return error_code::SUCCESS;
+   }
    case ondemand::json_type::array: {
      // Not supported.
      return error_code::UNSUPPORTED_ARCHITECTURE;
@@ -102,32 +97,19 @@ const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std:
   if (json_path.length() < 3) {
     return nullptr;
   }
-  // Follow spark's format for specifying a field, e.g., ".$a.b".
-  auto raw_field_name = json_path.substr(2);
-  std::vector<std::string> fields;
-  while (raw_field_name.find(".") != std::string::npos) {
-    auto ind = raw_field_name.find(".");
-    fields.push_back(raw_field_name.substr(0, ind));
-    raw_field_name = raw_field_name.substr(ind + 1);
-  }
-  fields.push_back(raw_field_name);
-
-  // Illegal case.
-  if (fields.size() < 1) {
-    return nullptr;
-  }
-
-  auto raw_res = doc.find_field(fields[0]);
-  error_code error;
+  // Follow spark's format for specifying a field, e.g., "$.a.b".
+  auto formatted_json_path = json_path.substr(1);
+  std::replace(formatted_json_path.begin(), formatted_json_path.end(), '.', '/');
   std::string res;
-  fields.erase(fields.begin());
+  error_code error;
   try {
-    error = handle_types(raw_res, fields, &res);
-  } catch(...) {
+    auto raw_res = doc.at_pointer(formatted_json_path);
+    error = handle_types(raw_res, &res);
+    if (error) {
+      return nullptr;
+    }
+  } catch (...) {
     return nullptr;
-  }
-  if (error) {
-   return nullptr;
   }
 
   *out_len = res.length();
