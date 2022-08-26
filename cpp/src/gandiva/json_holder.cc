@@ -98,8 +98,20 @@ const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std:
     return nullptr;
   }
   // Follow spark's format for specifying a field, e.g., "$.a.b".
-  auto formatted_json_path = json_path.substr(1);
-  std::replace(formatted_json_path.begin(), formatted_json_path.end(), '.', '/');
+  char formatted_json_path[json_path.length() + 1];
+  int j = 0;
+  for (int i = 0; i < json_path.length(); i++) {
+    if (json_path[i] == '$' || json_path[i] == ']' || json_path[i] == '\'') {
+      continue;
+    } else if (json_path[i] == '[' || json_path[i] == '.') {
+      formatted_json_path[j] = '/';
+      j++;
+    } else {
+      formatted_json_path[j] = json_path[i];
+      j++;
+    }
+  }
+  formatted_json_path[j] = '\0';
   std::string res;
   error_code error;
   try {
