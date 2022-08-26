@@ -73,10 +73,14 @@ error_code handle_types(simdjson_result<ondemand::value> raw_res, std::string* r
      ss << obj;
      *res = ss.str();
      return error_code::SUCCESS;
-   }
+    }
    case ondemand::json_type::array: {
-     // Not supported.
-     return error_code::UNSUPPORTED_ARCHITECTURE;
+     auto array_obj = raw_res.get_array();
+     // For the case that result is a json object.
+     std::stringstream ss;
+     ss << array_obj;
+     *res = ss.str();
+     return error_code::SUCCESS;
     }
    case ondemand::json_type::null: {
      return error_code::UNSUPPORTED_ARCHITECTURE;
