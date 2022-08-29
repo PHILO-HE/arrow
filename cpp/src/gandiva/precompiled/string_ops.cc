@@ -1661,18 +1661,33 @@ const char* split_part(gdv_int64 context, const char* text, gdv_int32 text_len,
     return text;
   }
 
+  // TODO: matching regular expression for split function. Currently, we replace getArrayItem(split)
+  // with this split_part function. The split function also supports regexp based delimiter other than
+  // literal delimiter.
+  int j = 0;
+  char real_delimiter[delim_len];
+  for (int i = 0; i < delim_len; i++) {
+    if (delimiter[i] == '\\') {
+      continue;
+    } else {
+      real_delimiter[j] = delimiter[i];
+      j++;
+    }
+  }
+  int real_delimiter_len = j;
+
   int i = 0, match_no = 0;
 
   while (i < text_len) {
     // find the position where delimiter matched for the first time
-    int match_pos = match_string(text, text_len, i, delimiter, delim_len);
+    int match_pos = match_string(text, text_len, i, real_delimiter, real_delimiter_len);
     if (match_pos == -1 && match_no != index) {
       // reached the end without finding a match.
       return "";
     } else {
       // Found a match. If the match number is index then return this match
       if (match_no == index) {
-        int end_pos = match_pos - delim_len;
+        int end_pos = match_pos - real_delimiter_len;
 
         if (match_pos == -1) {
           // end position should be last position of the string as we have the last

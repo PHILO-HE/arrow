@@ -1286,6 +1286,9 @@ TEST(TestStringOps, TestSplitPart) {
 
   out_str = split_part(ctx_ptr, "ç†ååçåå†", 18, "†", 3, 1, &out_len);
   EXPECT_EQ(std::string(out_str, out_len), "ååçåå");
+
+  out_str = split_part(ctx_ptr, "A?B?C", 5, "\\?", 2, 1, &out_len);
+  EXPECT_EQ(std::string(out_str, out_len), "B");
 }
 
 TEST(TestStringOps, TestURLDecoder) {
