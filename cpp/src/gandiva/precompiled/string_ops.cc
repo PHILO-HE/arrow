@@ -1643,10 +1643,14 @@ const char* rpad_utf8_int32(gdv_int64 context, const char* text, gdv_int32 text_
 }
 
 FORCE_INLINE
-const char* split_part(gdv_int64 context, const char* text, gdv_int32 text_len,
-                       const char* delimiter, gdv_int32 delim_len, gdv_int32 index,
-                       gdv_int32* out_len) {
+const char* split_part(gdv_int64 context, const char* text, gdv_int32 text_len, bool in1_valid,
+                       const char* delimiter, gdv_int32 delim_len, bool in2_valid, gdv_int32 index,
+                       bool in3_valid, bool* out_valid, gdv_int32* out_len) {
   *out_len = 0;
+  if (!in1_valid || !in2_valid || !in3_valid) {
+    *out_valid = false;
+    return "";
+  }
   if (index < 0) {
     char error_message[100];
     snprintf(error_message, sizeof(error_message),
@@ -1683,6 +1687,8 @@ const char* split_part(gdv_int64 context, const char* text, gdv_int32 text_len,
     int match_pos = match_string(text, text_len, i, real_delimiter, real_delimiter_len);
     if (match_pos == -1 && match_no != index) {
       // reached the end without finding a match.
+      *out_len = 0;
+      *out_valid = false;
       return "";
     } else {
       // Found a match. If the match number is index then return this match
@@ -1708,6 +1714,7 @@ const char* split_part(gdv_int64 context, const char* text, gdv_int32 text_len,
           return "";
         }
         memcpy(out_str, text + i, *out_len);
+        *out_valid = true;
         return out_str;
       } else {
         i = match_pos;
