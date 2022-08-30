@@ -91,6 +91,17 @@ error_code handle_types(simdjson_result<ondemand::value> raw_res, std::string* r
 const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std::string& json_str,
  const std::string& json_path, int32_t* out_len) {
   padded_string padded_input(json_str);
+
+  // Just for json string validation. With ondemand api, when a target field is found, the remaining
+  // json string will not be parsed and validated. So we use the below dom api for fully parsing and
+  // return null result finally for illegal json string, which is consistent with Spark.
+  dom::parser parser_validate;
+  dom::element doc_validate;
+  auto error_validate = parser_validate.parse(padded_input).get(doc_validate);
+  if (error_validate) {
+    return nullptr;
+  }
+
   ondemand::parser parser;
   ondemand::document doc;
   try {
