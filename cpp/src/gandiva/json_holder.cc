@@ -88,6 +88,43 @@ error_code handle_types(simdjson_result<ondemand::value> raw_res, std::string* r
   }
 }
 
+bool check_char(const std::string& raw_json_str, int check_index) {
+  if (check_index > raw_json_str.length() - 1) {
+    return false;
+  }
+  char ending_char = raw_json_str[check_index];
+  if (ending_char == ',') {
+    return true;
+  } else if (ending_char == '}') {
+    return true;
+  } else if (ending_char == ' ') {
+    // space can precede valid ending char.
+    return check_char(raw_json_str, check_index + 1);
+  } else {
+    return false;
+  }
+}
+
+bool is_valid(const std::string& raw_json_str, const std::string& output) {
+  auto index = raw_json_str.find(output);
+  if (index == std::string::npos) {
+    std::runtime_error unexpected_error("Fix me! The result should be a part of json string!");
+    throw unexpected_error;
+  }
+  // get_json_object(, $)
+  if (index == 0) {
+    return true;
+  }
+  int begin_check_index;
+  // The output string may be surrounded by " in the original json string.
+  if (raw_json_str[index - 1] == '\"') {
+    begin_check_index = index + output.length() + 1;
+  } else {
+    begin_check_index = index + output.length();
+  }
+  return check_char(raw_json_str, begin_check_index);
+}
+
 const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std::string& json_str,
  const std::string& json_path, int32_t* out_len) {
   padded_string padded_input(json_str);
@@ -95,12 +132,12 @@ const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std:
   // Just for json string validation. With ondemand api, when a target field is found, the remaining
   // json string will not be parsed and validated. So we use the below dom api for fully parsing and
   // return null result finally for illegal json string, which is consistent with Spark.
-  dom::parser parser_validate;
-  dom::element doc_validate;
-  auto error_validate = parser_validate.parse(padded_input).get(doc_validate);
-  if (error_validate) {
-    return nullptr;
-  }
+  // dom::parser parser_validate;
+  // dom::element doc_validate;
+  // auto error_validate = parser_validate.parse(padded_input).get(doc_validate);
+  // if (error_validate) {
+  //   return nullptr;
+  // }
 
   ondemand::parser parser;
   ondemand::document doc;
@@ -143,6 +180,11 @@ const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std:
   if (*out_len == 0) {
     return reinterpret_cast<const uint8_t*>("");
   }
+
+  if (!is_valid(json_str, res)) {
+    return nullptr;
+  }
+
   uint8_t* result_buffer = reinterpret_cast<uint8_t*>(ctx->arena()->Allocate(*out_len));
   memcpy(result_buffer, res.data(), *out_len);
   return result_buffer;
