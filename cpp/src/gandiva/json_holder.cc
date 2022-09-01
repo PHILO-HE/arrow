@@ -22,7 +22,6 @@
 #include "gandiva/node.h"
 #include "gandiva/regex_util.h"
 #include <sstream>
-#include <algorithm>
 
 using namespace simdjson;
 
@@ -66,7 +65,7 @@ error_code handle_types(simdjson_result<ondemand::value> raw_res, std::string* r
      return error_code::SUCCESS;
     }
    case ondemand::json_type::object: {
-     // For nested case, e.g., for "{"my": {"hello": 10}}", ".$my" will return an object type.
+     // For nested case, e.g., for "{"my": {"hello": 10}}", "$.my" will return an object type.
      auto obj = raw_res.get_object();
      // For the case that result is a json object.
      std::stringstream ss;
@@ -97,19 +96,27 @@ bool check_char(const std::string& raw_json_str, int check_index) {
     return true;
   } else if (ending_char == '}') {
     return true;
-  } else if (ending_char == ' ') {
-    // space can precede valid ending char.
+  } else if (ending_char == ']') {
+    return true;
+  } else if (ending_char == ' ' || ending_char == '\r' || ending_char == '\n' || ending_char == '\t') {
+    // space, '\r', '\n' or '\t' can precede valid ending char.
     return check_char(raw_json_str, check_index + 1);
   } else {
     return false;
   }
 }
 
+// This is simple validatin by checking whether the obtained result is followed by expected char,
+// It is useful in ondemand kind of parsing which can ignore the validation of character following
+// closing '"'. This functon is a simple checking. For many cases, even though it returns true, the
+// raw json string can still be illegal possibly.
 bool is_valid(const std::string& raw_json_str, const std::string& output) {
   auto index = raw_json_str.find(output);
   if (index == std::string::npos) {
-    std::runtime_error unexpected_error("Fix me! The result should be a part of json string!");
-    throw unexpected_error;
+    // std::runtime_error unexpected_error("Fix me! The result should be a part of json string!");
+    // throw unexpected_error;
+    // Conservatively handling: view the result is true even though it is not found.
+    return true;
   }
   // get_json_object(, $)
   if (index == 0) {
@@ -132,6 +139,7 @@ const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std:
   // Just for json string validation. With ondemand api, when a target field is found, the remaining
   // json string will not be parsed and validated. So we use the below dom api for fully parsing and
   // return null result finally for illegal json string, which is consistent with Spark.
+  // This validation can bring much perf. overhead.
   // dom::parser parser_validate;
   // dom::element doc_validate;
   // auto error_validate = parser_validate.parse(padded_input).get(doc_validate);
@@ -187,6 +195,7 @@ const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std:
 
   uint8_t* result_buffer = reinterpret_cast<uint8_t*>(ctx->arena()->Allocate(*out_len));
   memcpy(result_buffer, res.data(), *out_len);
+
   return result_buffer;
 }
 

@@ -127,6 +127,13 @@ TEST_F(TestJsonHolder, TestJson) {
   expected_res = "placeholder1";
   EXPECT_EQ(out_len, expected_res.length());
   EXPECT_EQ(std::string((char*)data, out_len), expected_res);
+
+  out_len = 0;
+  data = get_json_object(&execution_context_, R"([{"my": {"param": {"name": "fang"}}}, {"other": ["placeholder1", "placeholder2"]}])",
+   "$[1].other[1]", &out_len);
+  expected_res = "placeholder2";
+  EXPECT_EQ(out_len, expected_res.length());
+  EXPECT_EQ(std::string((char*)data, out_len), expected_res);
 }
 
 }  // namespace gandiva
