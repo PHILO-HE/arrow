@@ -52,6 +52,14 @@ error_code handle_types(simdjson_result<ondemand::value> raw_res, std::string* r
      std::string_view res_view;
      auto error = raw_res.get_string().get(res_view);
      *res = std::string(res_view);
+     // Return raw string if meeting parsing string error.
+     if (error == STRING_ERROR) {
+       ondemand::raw_json_string raw_string;
+       error = raw_res.get_raw_json_string().get(raw_string);
+       std::stringstream ss;
+       ss << raw_string;
+       *res = ss.str();
+     }
      return error;
     }
    case ondemand::json_type::boolean: {
