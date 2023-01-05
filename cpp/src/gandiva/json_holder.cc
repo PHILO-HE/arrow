@@ -22,6 +22,7 @@
 #include "gandiva/node.h"
 #include "gandiva/regex_util.h"
 #include <sstream>
+#include <iostream>
 
 using namespace simdjson;
 
@@ -150,15 +151,20 @@ const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std:
     }
   }
   formatted_json_path[j] = '\0';
-  auto ret_code =  doc.find_field(formatted_json_path);
-  if (ret_code.error() == error_code::NO_SUCH_FIELD) {
-    return nullptr;
-  }
+  
+  // auto ret_code =  doc.find_field(formatted_json_path);
+  // if (ret_code.error() == error_code::NO_SUCH_FIELD) {
+  //   return nullptr;
+  // }
 
   std::string res;
   error_code error;
   try {
     auto raw_res = doc.at_pointer(formatted_json_path);
+    if (raw_res.error() == error_code::NO_SUCH_FIELD) {
+      std::cout << "#### No such field!\n";
+      return nullptr;
+    }
     error = handle_types(raw_res, &res);
     if (error) {
       return nullptr;
