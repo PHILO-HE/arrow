@@ -151,7 +151,7 @@ const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std:
   }
   formatted_json_path[j] = '\0';
   auto ret_code =  doc.find_field(formatted_json_path);
-  if (ret_code == error_code::NO_SUCH_FIELD) {
+  if (ret_code.error() == error_code::NO_SUCH_FIELD) {
     return nullptr;
   }
 
