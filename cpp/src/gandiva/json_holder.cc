@@ -127,10 +127,9 @@ const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std:
   //   return nullptr;
   // }
 
-  ondemand::parser parser;
   ondemand::document doc;
   try {
-    doc = parser.iterate(padded_input);
+    doc = parser_.iterate(padded_input);
   } catch (simdjson_error& e) {
     return nullptr;
   }
