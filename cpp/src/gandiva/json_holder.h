@@ -59,6 +59,7 @@ class GANDIVA_EXPORT JsonHolder : public FunctionHolder {
   ~JsonHolder() override {
     if (formatted_json_path_cached_ != nullptr) {
       delete []formatted_json_path_cached_;
+      formatted_json_path_cached_ = nullptr;
     }
   }
 

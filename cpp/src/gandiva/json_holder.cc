@@ -18,7 +18,6 @@
 #include "gandiva/json_holder.h"
 
 #include "gandiva/node.h"
-#include "arrow/status.h"
 #include <sstream>
 
 using namespace simdjson;
@@ -181,9 +180,10 @@ const uint8_t* JsonHolder::operator()(gandiva::ExecutionContext* ctx, const std:
   error_code error;
   try {
     auto raw_res = doc.at_pointer(formatted_json_path);
-    // free allocated memory for formatted_json_path for not cached case.
+    // Free allocated memory for formatted_json_path for not cached case.
     if (formatted_json_path_cached_ == nullptr) {
       delete []formatted_json_path;
+      formatted_json_path = nullptr;
     }
     if (raw_res.error() == error_code::NO_SUCH_FIELD) {
       return nullptr;
