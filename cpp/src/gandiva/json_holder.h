@@ -36,17 +36,19 @@ namespace gandiva {
 /// Function Holder for SQL 'get_json_object'
 class GANDIVA_EXPORT JsonHolder : public FunctionHolder {
  public:
-  JsonHolder() {}
   ~JsonHolder() override = default;
 
   static Status Make(const FunctionNode& node, std::shared_ptr<JsonHolder>* holder);
   static Status Make(std::shared_ptr<JsonHolder>* holder);
 
-  //TODO(): should try to return const uint8_t *
   const uint8_t* operator()(ExecutionContext* ctx, const std::string& json_str, const std::string& json_path, int32_t* out_len);
 
+  JsonHolder() {
+    parser_ = std::make_shared<ondemand::parser>();
+  }
+
  private:
-    ondemand::parser parser_;
+  std::shared_ptr<ondemand::parser> parser_;
 };
 
 }  // namespace gandiva
