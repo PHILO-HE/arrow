@@ -157,6 +157,9 @@ inline uint8_t ParseDecimalDigit(char c) { return static_cast<uint8_t>(c - '0');
 
 #define PARSE_UNSIGNED_ITERATION(C_TYPE)          \
   if (length > 0) {                               \
+    if (*s == '.') {                              \
+      break;                                      \
+    }                                             \
     uint8_t digit = ParseDecimalDigit(*s++);      \
     result = static_cast<C_TYPE>(result * 10U);   \
     length--;                                     \
@@ -174,6 +177,9 @@ inline uint8_t ParseDecimalDigit(char c) { return static_cast<uint8_t>(c - '0');
     if (ARROW_PREDICT_FALSE(result > std::numeric_limits<C_TYPE>::max() / 10U)) { \
       /* Overflow */                                                              \
       return false;                                                               \
+    }                                                                             \
+    if (*s == '.') {                                                              \
+      break;                                                                      \
     }                                                                             \
     uint8_t digit = ParseDecimalDigit(*s++);                                      \
     result = static_cast<C_TYPE>(result * 10U);                                   \

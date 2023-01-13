@@ -47,10 +47,11 @@ TEST(TestGdvFnStubs, TestCastINT) {
               ::testing::HasSubstr("Failed to cast the string -2147483649 to int32"));
   ctx.Reset();
 
-  gdv_fn_castINT_utf8(ctx_ptr, "12.34", 5);
-  EXPECT_THAT(ctx.get_error(),
-              ::testing::HasSubstr("Failed to cast the string 12.34 to int32"));
-  ctx.Reset();
+  // gdv_fn_castINT_utf8(ctx_ptr, "12.34", 5);
+  // EXPECT_THAT(ctx.get_error(),
+  //             ::testing::HasSubstr("Failed to cast the string 12.34 to int32"));
+  // ctx.Reset();
+  EXPECT_EQ(gdv_fn_castINT_utf8(ctx_ptr, "12.34", 5), 12);
 
   gdv_fn_castINT_utf8(ctx_ptr, "abc", 3);
   EXPECT_THAT(ctx.get_error(),
@@ -97,10 +98,11 @@ TEST(TestGdvFnStubs, TestCastBIGINT) {
       ::testing::HasSubstr("Failed to cast the string -9223372036854775809 to int64"));
   ctx.Reset();
 
-  gdv_fn_castBIGINT_utf8(ctx_ptr, "12.34", 5);
-  EXPECT_THAT(ctx.get_error(),
-              ::testing::HasSubstr("Failed to cast the string 12.34 to int64"));
-  ctx.Reset();
+  // gdv_fn_castBIGINT_utf8(ctx_ptr, "12.34", 5);
+  // EXPECT_THAT(ctx.get_error(),
+  //             ::testing::HasSubstr("Failed to cast the string 12.34 to int64"));
+  // ctx.Reset();
+  EXPECT_EQ(gdv_fn_castINT_utf8(ctx_ptr, "12.34", 5), 12);
 
   gdv_fn_castBIGINT_utf8(ctx_ptr, "abc", 3);
   EXPECT_THAT(ctx.get_error(),
